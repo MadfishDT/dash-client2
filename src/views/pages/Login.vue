@@ -16,6 +16,7 @@
                                             </b-input-group-text>
                                         </b-input-group-prepend>
                                         <b-form-input
+                                            :readonly = "this.loginForm.readOnly"  
                                             type="text"
                                             class="form-control"
                                             placeholder="Username"
@@ -29,7 +30,8 @@
                                             </b-input-group-text>
                                         </b-input-group-prepend>
                                         <b-form-input
-                                            type="password"
+                                            :readonly = "this.loginForm.readOnly"
+                                            type="password" 
                                             class="form-control"
                                             placeholder="Password"
                                             autocomplete="current-password" v-model="model.password"
@@ -37,7 +39,7 @@
                                     </b-input-group>
                                     <b-row>
                                         <b-col cols="12">
-                                            <b-button variant="primary" @click="login" class="form-control"> Login</b-button>
+                                            <b-button block :variant="this.loginForm.color" @click="authenticate"> {{this.loginForm.loginAndLogoutText}}</b-button>
                                         </b-col>
                                     </b-row>
                                     <b-row>
@@ -76,15 +78,48 @@ export default {
         return {    
             alterText: "no data",
             dismissCountdown: 0,
+            isLogined: false,
+            loginForm: {
+                loginAndLogoutText: 'Login',
+                readOnly: false,
+                color: 'primary'
+            },
             model: {
                 email: '',
                 password: ''
             }
         };
     },
+    async mounted() {
+        const result  = await this.$service.$loginservice.getAuthenticated(); 
+        this.isLogined = result ? true : false;
+        this.adjustLoginFormUI(result);
+    },
     methods: {
+        adjustLoginFormUI: function(userProfile) {
+            if(userProfile) {
+                this.model.email = userProfile.email;
+                this.model.password = '*********';
+                this.loginForm.readOnly = true;
+                this.loginForm.color = 'secondary';
+                this.loginForm.loginAndLogoutText = 'Logout';
+            } else {
+                this.model.email = '';
+                this.model.password = '';
+                this.loginForm.readOnly = false;
+                this.loginForm.color = 'primary';
+                 this.loginForm.loginAndLogoutText = 'Login';
+            } 
+        },
+        authenticate: async function() {
+            if(this.isLogined) {
+                this.logout();
+            } else {
+                this.login();
+            }
+        },
         login: async function() {
-            console.log(`${this.model.email}  ${this.model.password}`);
+           
             if (this.model.email && this.model.password) {
                 let result = await this.$service.$loginservice.login(
                     this.model.email,
@@ -92,25 +127,26 @@ export default {
                 );
                 if (result) {
                     this.showAlert('Login Suceess');
+                    this.$router.push('boards/dashboard');
                 } else {
-                    this.showAlert('Login Fail');     
+                    this.showAlert('Login Fail');
                 }
+            } else {
+                this.showAlert('Email or Password is wrong');
             }
-            this.isloaderVisible = false;
         },
         showAlert(text) {
             this.alterText = text;
             this.dismissCountdown = 2;
         },
         logout: async function() {
-            this.isloaderVisible = true;
             const result = await this.$service.$loginservice.logout();
             if (result) {
-                this.showAlert('Logouted');
+                this.showAlert('Logout success');
             } else {
-                this.showAlert('Fail Logout');
+                this.showAlert('Logout fail');
             }
-            this.isloaderVisible = false;
+            this.adjustLoginFormUI();
         },
         closeModal: function() {
             this.$refs["alter-modal"].toggle("#toggle-btn");
