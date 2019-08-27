@@ -94,6 +94,11 @@ export default {
         const result  = await this.$service.$loginservice.getAuthenticated(); 
         this.isLogined = result ? true : false;
         this.adjustLoginFormUI(result);
+        const authChangeSubject = await this.$service.$loginservice.authChangeSubject;
+        authChangeSubject.subscribe( (isAuthenticated) => {
+            this.isLogined = isAuthenticated;
+        });
+
     },
     methods: {
         adjustLoginFormUI: function(userProfile) {
@@ -127,7 +132,7 @@ export default {
                 );
                 if (result) {
                     this.showAlert('Login Suceess');
-                    this.$router.push('boards/dashboard');
+                    this.$router.push('qboards/questions');
                 } else {
                     this.showAlert('Login Fail');
                 }
@@ -142,6 +147,7 @@ export default {
         logout: async function() {
             const result = await this.$service.$loginservice.logout();
             if (result) {
+                this.isLogined = false;
                 this.showAlert('Logout success');
             } else {
                 this.showAlert('Logout fail');

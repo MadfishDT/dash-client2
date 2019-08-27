@@ -11,10 +11,14 @@ export class LoginService {
         this.userProfile = null;
         this._isAthenticateChecked = false;
         this._sessionAlive = false;
+        this._authChange = new Subject();
         this._userSubject = new Subject();
         this._userProfileSubject = new Subject();
     }
 
+    get authChangeSubject() {
+        return this._authChange;
+    }
     get userChangeSubject() {
         return this._userSubject;
     }

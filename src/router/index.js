@@ -3,9 +3,13 @@ import Router from 'vue-router'
 
 // Containers
 const DefaultContainer = () => import('@/containers/DefaultContainer')
+const QDefaultContainer = () => import('@/containers/QDefaultContainer')
+
 
 // Views
 const Dashboard = () => import('@/views/Dashboard')
+const Questionsboard = () => import('@/views/Questionsboard')
+
 
 const Colors = () => import('@/views/theme/Colors')
 const Typography = () => import('@/views/theme/Typography')
@@ -106,11 +110,29 @@ export default new Router({
             ]
         },
         {
+            path: '/qboards',
+            redirect: '/qboards/questions',
+            name: 'Run',
+            component: QDefaultContainer,
+            children: [
+                {
+                    path: 'questions',
+                    name: 'Questions',
+                    component: Questionsboard
+                }
+            ]
+        },
+        {
             path: '/boards',
-            redirect: '/dashboard',
-            name: 'Home',
+            redirect: '/boards/questions',
+            name: 'Run',
             component: DefaultContainer,
             children: [
+                {
+                    path: 'questions',
+                    name: 'Questions',
+                    component: Questionsboard
+                },
                 {
                     path: 'dashboard',
                     name: 'Dashboard',
