@@ -17,10 +17,10 @@
                 <b-nav-item class="d-md-down-none">
                     <i class="icon-location-pin"></i>
                 </b-nav-item>
-                <DefaultHeaderDropdownAccnt />
+                <DefaultHeaderDropdownAccnt/>
             </b-navbar-nav>
             <div class="dropdown-divider"></div>
-            <AsideToggler class="d-none d-lg-block" />
+            <AsideToggler class="d-none d-lg-block"/>
             <!--<AsideToggler class="d-lg-none" mobile />-->
         </AppHeader>
         <div class="app-body">
@@ -48,7 +48,7 @@
                 </div>
                 <div class="dropdown-divider" style="border-color:gray;"/>
                 <b-tooltip target="img_profile" :title="this.user.fullname"></b-tooltip>
-                <SidebarNav class="bg-dark" :navItems="this.categories.items"></SidebarNav>
+                <SidebarNav :navItems="this.categories.items" v-on:click="clickItems()"></SidebarNav>
                 <SidebarFooter />
                 <SidebarMinimizer/>
             </AppSidebar>
@@ -64,7 +64,7 @@
         </div>
         <TheFooter>
             <div>
-                <a href="https://www.korea.com">CoreUI</a>
+                <a href="https://www.korea.com"></a>
                 <span class="ml-1">&copy; 2019 Quantified</span>
             </div>
         </TheFooter>
@@ -89,9 +89,10 @@ import {
 } from "@coreui/vue";
 import DefaultAside from "./DefaultAside";
 import DefaultHeaderDropdownAccnt from "./DefaultHeaderDropdownAccnt";
+import ElementItemGenerator from "./elementitem.generator";
 
 export default {
-    name: "DefaultContainer",
+    name: "QDefaultContainer",
     components: {
         AsideToggler,
         AppHeader,
@@ -117,7 +118,8 @@ export default {
                 imageUrl: "empty",
                 fullname: "empty"
             },
-            categories: []
+            categories: [],
+            cid: -1
         };
     },
     created: function() {
@@ -132,47 +134,28 @@ export default {
         });
         this.loadCategories();
     },
+    updated() {
+          if (this.$route.query && this.$route.query.cid) {
+                const cid = parseInt(this.$route.query.cid);
+                console.log(`page router update cid is ${this.cid}-${cid}`);
+                if(this.cid !== cid ) {
+                    this.cid = cid;
+                }
+                this.$service.$contentsservice;
+           }
+    },
+    mounted: function() {
+    
+    },
     methods: {
+         clickItems: function() {
+           console.log('click items1');
+        },
         async loadCategories() {
             let result = await this.$service.$contentsservice.getCategories();
-            
-            let categories = { 
-                items: [
-                {
-                    title: true,
-                    name: 'Categories',
-                    class: 'font-lg bg-dark',
-                    wrapper: {
-                        element: '',
-                        attributes: {}
-                    }
-                }]
-            }
-
             if (result) {
-                result.forEach(item => {
-                    let resultItem = {
-                        name: item.name,
-                        url: `/qboards/questions?cid=${item.id}`,
-                        icon: 'icon-doc'
-                    };
-                    
-                    if(item.children && item.children.length > 0) {
-                        resultItem['children'] = [];
-                        item.children.forEach( citem => {
-                            resultItem['children'].push({
-                                name: citem.name,
-                                url: `/qboards/questions?cid=${citem.id}`,
-                                icon: 'icon-arrow-right-circle'
-                            })
-                        });
-                    }
-                    categories.items.push(resultItem);
-                });
+                this.categories = ElementItemGenerator.genMakeSidebarCategoryItems(result);
             }
-            this.categories = categories;
-            
-              
         },
         setUserInfo(user) {
             this.user.fullname = user.user_name;

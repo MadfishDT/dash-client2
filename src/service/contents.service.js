@@ -8,6 +8,7 @@ export class ContentsService {
         this.config = new ConfigService();
         this._categoriesSubject = new Subject();
         this._categoryChangeSubject = new Subject();
+        this._categorySelectedSubject = new Subject();
 
     }
     emitChangeCategory(category_id) {
