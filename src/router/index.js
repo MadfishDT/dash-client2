@@ -64,6 +64,15 @@ const User = () => import('@/views/users/User')
 
 Vue.use(Router)
 
+const requireAuth = () => async (from, to, next) => {
+    console.log("check logined");
+    let result = await Vue.prototype.$service.$loginservice.getAuthenticated();
+    if(!result) {
+      return next('/');
+    } else {
+      next();
+    }
+}
 export default new Router({
     mode: 'hash', // https://router.vuejs.org/api/#mode
     linkActiveClass: 'open active',
@@ -114,6 +123,7 @@ export default new Router({
             redirect: '/qboards/questions',
             name: 'Run',
             component: QDefaultContainer,
+            beforeEnter: requireAuth(),
             children: [
                 {
                     path: 'questions',

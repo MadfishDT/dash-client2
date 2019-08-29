@@ -19,6 +19,7 @@
                 </b-nav-item>
                 <DefaultHeaderDropdownAccnt />
             </b-navbar-nav>
+            <div class="dropdown-divider"></div>
             <AsideToggler class="d-none d-lg-block" />
             <!--<AsideToggler class="d-lg-none" mobile />-->
         </AppHeader>
@@ -27,35 +28,32 @@
                 <SidebarHeader />
                 <SidebarForm />
                 <div class="brand-card-header bg-gray-700">
-                      <img
-                            id="img_profile"
-                            width="65"
-                            alt="No Image"
-                            class="img-avatar font-2xl mr-3 float-left"
-                            :src="this.user.imageUrl"
-                        />
+                    <img
+                        id="img_profile"
+                        width="65"
+                        alt="No Image"
+                        class="img-avatar font-2xl mr-3 float-left"
+                        :src="this.user.imageUrl"
+                    />
                     <div class="chart-wrapper">
                         <social-box-chart-example :data="[65, 59, 84, 84, 51, 55, 40]" />
                     </div>
                 </div>
-                
+
                 <div class="brand-card-body bg-dark">
                     <div>
                         <div class="text-uppercase text-muted small">{{this.user.fullname}}</div>
                         <div class="text-muted small font-weight-bold">{{this.user.company}}</div>
-                        
                     </div>
-                 
                 </div>
-             
+                <div class="dropdown-divider" style="border-color:gray;"/>
                 <b-tooltip target="img_profile" :title="this.user.fullname"></b-tooltip>
-                <SidebarNav :navItems="nav"></SidebarNav>
+                <SidebarNav class="bg-dark" :navItems="this.categories.items"></SidebarNav>
                 <SidebarFooter />
-                <SidebarMinimizer />
+                <SidebarMinimizer/>
             </AppSidebar>
             <main class="main">
-                <Breadcrumb />
-                <div class="container-fluid">
+                <div class="container-fluid mt-3">
                     <router-view></router-view>
                 </div>
             </main>
@@ -65,14 +63,9 @@
             </AppAside>
         </div>
         <TheFooter>
-            <!--footer-->
             <div>
-                <a href="https://coreui.io">CoreUI</a>
-                <span class="ml-1">&copy; 2018 creativeLabs.</span>
-            </div>
-            <div class="ml-auto">
-                <span class="mr-1">Powered by</span>
-                <a href="https://coreui.io">CoreUI for Vue</a>
+                <a href="https://www.korea.com">CoreUI</a>
+                <span class="ml-1">&copy; 2019 Quantified</span>
             </div>
         </TheFooter>
     </div>
@@ -123,7 +116,8 @@ export default {
                 company: "empty",
                 imageUrl: "empty",
                 fullname: "empty"
-            }
+            },
+            categories: []
         };
     },
     created: function() {
@@ -136,8 +130,50 @@ export default {
             console.log(`user subscribe url is: ${JSON.stringify(user)}`);
             this.setUserInfo(user);
         });
+        this.loadCategories();
     },
     methods: {
+        async loadCategories() {
+            let result = await this.$service.$contentsservice.getCategories();
+            
+            let categories = { 
+                items: [
+                {
+                    title: true,
+                    name: 'Categories',
+                    class: 'font-lg bg-dark',
+                    wrapper: {
+                        element: '',
+                        attributes: {}
+                    }
+                }]
+            }
+
+            if (result) {
+                result.forEach(item => {
+                    let resultItem = {
+                        name: item.name,
+                        url: `/qboards/questions?cid=${item.id}`,
+                        icon: 'icon-doc'
+                    };
+                    
+                    if(item.children && item.children.length > 0) {
+                        resultItem['children'] = [];
+                        item.children.forEach( citem => {
+                            resultItem['children'].push({
+                                name: citem.name,
+                                url: `/qboards/questions?cid=${citem.id}`,
+                                icon: 'icon-arrow-right-circle'
+                            })
+                        });
+                    }
+                    categories.items.push(resultItem);
+                });
+            }
+            this.categories = categories;
+            
+              
+        },
         setUserInfo(user) {
             this.user.fullname = user.user_name;
             let editedName = `${user.user_name}`;
@@ -158,11 +194,6 @@ export default {
         name() {
             return this.$route.name;
         },
-        list() {
-            return this.$route.matched.filter(
-                route => route.name || route.meta.label
-            );
-        }
     }
 };
 </script>
