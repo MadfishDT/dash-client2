@@ -85,8 +85,8 @@ export default {
                 color: 'primary'
             },
             model: {
-                email: '',
-                password: ''
+                email: 'dev@dev.com',
+                password: 'dev'
             }
         };
     },
@@ -109,8 +109,8 @@ export default {
                 this.loginForm.color = 'secondary';
                 this.loginForm.loginAndLogoutText = 'Logout';
             } else {
-                this.model.email = '';
-                this.model.password = '';
+                this.model.email = 'dev@dev.com';
+                this.model.password = 'dev';
                 this.loginForm.readOnly = false;
                 this.loginForm.color = 'primary';
                  this.loginForm.loginAndLogoutText = 'Login';

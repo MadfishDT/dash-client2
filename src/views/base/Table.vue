@@ -14,7 +14,6 @@
 
 <script>
 
-
 export default {
   name: 'c-table',
   inheritAttrs: false,
