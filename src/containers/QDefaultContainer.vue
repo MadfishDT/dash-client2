@@ -35,9 +35,6 @@
                         class="img-avatar font-2xl mr-3 float-left"
                         :src="this.user.imageUrl"
                     />
-                    <div class="chart-wrapper">
-                        <social-box-chart-example :data="[65, 59, 84, 84, 51, 55, 40]" />
-                    </div>
                 </div>
 
                 <div class="brand-card-body bg-dark">

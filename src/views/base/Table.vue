@@ -41,7 +41,7 @@ export default {
     },
     fixed: {
       type: Boolean,
-      default: false
+      default: true
     },
     tableData: {
       type: [Array, Function],
