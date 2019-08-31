@@ -7,20 +7,9 @@
             </div>
             <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" />
             <b-navbar-nav class="ml-auto">
-                <b-nav-item class="d-md-down-none">
-                    <i class="icon-bell"></i>
-                    <b-badge pill variant="danger">5</b-badge>
-                </b-nav-item>
-                <b-nav-item class="d-md-down-none">
-                    <i class="icon-list"></i>
-                </b-nav-item>
-                <b-nav-item class="d-md-down-none">
-                    <i class="icon-location-pin"></i>
-                </b-nav-item>
-                <DefaultHeaderDropdownAccnt/>
+                <DefaultHeaderDropdownAccnt />
             </b-navbar-nav>
-            <div class="dropdown-divider"></div>
-            <AsideToggler class="d-none d-lg-block"/>
+            <!--<AsideToggler class="d-none d-lg-block"/>-->
             <!--<AsideToggler class="d-lg-none" mobile />-->
         </AppHeader>
         <div class="app-body">
@@ -28,29 +17,30 @@
                 <SidebarHeader />
                 <SidebarForm />
                 <div class="brand-card-header bg-gray-700">
-                    <img
+                             <img
                         id="img_profile"
                         width="65"
                         alt="No Image"
-                        class="img-avatar font-2xl mr-3 float-left"
+                        class="img-avatar font-2xl mr-0 float-left"
                         :src="this.user.imageUrl"
-                    />
+                        />
                 </div>
 
-                <div class="brand-card-body bg-dark">
+                <div class="brand-card-body bg-dark mb-4 pb-0">
                     <div>
-                        <div class="text-uppercase text-muted small">{{this.user.fullname}}</div>
+                        <div class="text-muted small">{{this.user.fullname}}</div>
                         <div class="text-muted small font-weight-bold">{{this.user.company}}</div>
+                       
                     </div>
                 </div>
-                <div class="dropdown-divider" style="border-color:gray;"/>
+                <div class="dropdown-divider mt-0" style="border-color:gray;" />
                 <b-tooltip target="img_profile" :title="this.user.fullname"></b-tooltip>
                 <SidebarNav :navItems="this.categories.items" v-on:click="clickItems()"></SidebarNav>
                 <SidebarFooter />
-                <SidebarMinimizer/>
+                <SidebarMinimizer />
             </AppSidebar>
             <main class="main">
-                <div class="container-fluid mt-3">
+                <div class="container-fluid mt-2">
                     <router-view></router-view>
                 </div>
             </main>
@@ -70,6 +60,7 @@
 
 <script>
 import nav from "@/_navqtemp";
+import { HeaderDropdown as AppHeaderDropdown } from "@coreui/vue";
 import {
     Header as AppHeader,
     SidebarToggler,
@@ -104,7 +95,8 @@ export default {
         SidebarToggler,
         SidebarHeader,
         SidebarNav,
-        SidebarMinimizer
+        SidebarMinimizer,
+        AppHeaderDropdown
     },
     data() {
         return {
@@ -132,26 +124,26 @@ export default {
         this.loadCategories();
     },
     updated() {
-          if (this.$route.query && this.$route.query.cid) {
-                const cid = parseInt(this.$route.query.cid);
-                console.log(`page router update cid is ${this.cid}-${cid}`);
-                if(this.cid !== cid ) {
-                    this.cid = cid;
-                }
-                this.$service.$contentsservice;
-           }
+        if (this.$route.query && this.$route.query.cid) {
+            const cid = parseInt(this.$route.query.cid);
+            console.log(`page router update cid is ${this.cid}-${cid}`);
+            if (this.cid !== cid) {
+                this.cid = cid;
+            }
+            this.$service.$contentsservice;
+        }
     },
-    mounted: function() {
-    
-    },
+    mounted: function() {},
     methods: {
-         clickItems: function() {
-           console.log('click items1');
+        clickItems: function() {
+            console.log("click items1");
         },
         async loadCategories() {
             let result = await this.$service.$contentsservice.getCategories();
             if (result) {
-                this.categories = ElementItemGenerator.genMakeSidebarCategoryItems(result);
+                this.categories = ElementItemGenerator.genMakeSidebarCategoryItems(
+                    result
+                );
             }
         },
         setUserInfo(user) {
@@ -173,7 +165,7 @@ export default {
     computed: {
         name() {
             return this.$route.name;
-        },
+        }
     }
 };
 </script>

@@ -19,38 +19,27 @@
                         </div>
                     </div>
                 </div>
+                 <div v-if="item.articles.type=='select'" class="input-group">
+                    <b-radio v-for="(article, aindex) in item.articles.form" :key="index + 's-e' + aindex" :name="aindex + 's-a' + index" 
+                    class="mb-3 ml-3 radio-inline" v-model="item.answer">{{article}}</b-radio>
+                </div>
 
-                 <b-form-group>
-                    <b-form-radio-group id="basicRadios"
-                    :plain="true"
-                    :options="[
-                        {text: 'Option 1 ',value: '1'},
-                        {text: 'Option 2 ',value: '2'},
-                        {text: 'Option 3 ',value: '3'}
-                    ]"
-                    checked="2"
-                    stacked>
-                    </b-form-radio-group>
-                </b-form-group>
-            </b-card>
-        </b-row>
-        <b-row>
-            <!--select template-->
-            <b-card>
-                <div slot="header">
-                    Card with switch
-                    <div class="card-header-actions" style="height: 21px;">
-                   
-                    </div>
-                </div>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
-            </b-card>
-            <b-card>
-                <div slot="header">
-                    Card with switch
-                    <div class="card-header-actions" style="height: 21px;">
-                   
-                    </div>
-                </div>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+                 <div v-if="item.articles.type=='check'" class="input-group">
+                   <b-checkbox v-for="(article, aindex) in item.articles.form" :key="index + 's-e' + aindex" :name="aindex + 's-a' + index" 
+                    class="mb-3 ml-3 radio-inline" v-model="item.answer">{{article}}</b-checkbox>
+                </div>
+                <div v-if="item.articles.type=='input'" class="input-group">
+                    <b-input class="mb-3" v-model="item.answer"></b-input>
+                </div>
+                <span v-if="item.articles.type=='select-file'">
+                 <div class="input-group">
+                  <b-radio v-for="(article, aindex) in item.articles.form" :key="index + 's-e' + aindex" :name="aindex + 's-a' + index" 
+                    class="mb-3 ml-3 radio-inline" v-model="item.answer">{{article}}</b-radio>
+                </div>
+                <div>
+                    <b-input class="mb-3" v-model="item.answer"></b-input>
+                </div>
+                </span>
             </b-card>
         </b-row>
     </div>
