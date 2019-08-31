@@ -12,7 +12,7 @@ export default {
         }
     },
     props: {
-        datas: {
+        charDatas: {
             type: [Object],
             default: () => {
                 return {
@@ -28,23 +28,10 @@ export default {
             }
         },
     },
-    beforeUpdate() {
-        console.log(`this is beforeUpdate ${this.datas}`);
-    },
-    updated() {
-        console.log(`this is upate ${this.datas}`);
-    },
-    created() {
-        console.log(`this is created ${JSON.stringify(this.datas)}`);
-    },
     mounted () {
         // Overwriting base render method with actual data.
-        this.$nextTick(function () {      
-           console.log(`this is next ${JSON.stringify(this.datas.labels)}`);
-        });
-        console.log(this.datas);
           this.renderChart(
-            this.datasets,
+            this.charDatas,
             {
                 responsive: true,
                 maintainAspectRatio: true,

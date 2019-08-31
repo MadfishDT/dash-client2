@@ -4,17 +4,17 @@
             <b-card class="w-100">
                 <div  slot="header" class="mb-0 pb-2">
                     <div class="mb-0 pb-0" :key="'q'-index-sindex" v-for="(qitem, sindex) in item.question">
-                        <div class="mb-0 pb-0" v-if="qitem.type == 'text'">
+                        <div class="mb-0 pb-0 font-weight-bold" v-if="qitem.type == 'text'">
                             * {{qitem.datas}}
                         </div>
                         <div class="d-flex justify-content-center mb-0 mt-2 pr-0 pb-2 centered" v-if="qitem.type == 'table'">
-                            <c-table class="mb-0 ml-0 pl-0 mr-0 pr-0 pb-0 col-12 col-md-8 bg-light" :table-data="qitem.datas.datas" :fields="qitem.datas.fields" :caption="qitem.datas.caption"></c-table>
+                            <c-table class="mb-0 ml-0 pl-0 mr-0 pr-0 
+                            pb-0 col-12 col-md-8 bg-light" :table-data="qitem.datas.datas" :fields="qitem.datas.fields" :caption="qitem.datas.caption"></c-table>
                         </div>
                         <div class="d-flex justify-content-center mb-0 mt-2 pr-0 pb-2 centered" 
                             v-if="qitem.type == 'chart'">
                             <div class="chart-wrapper">
-                            <q-bar-chart
-                             v-bind:datas="qitem.datas.datas"></q-bar-chart>
+                            <q-bar-chart :char-datas="qitem.datas"></q-bar-chart>
                             </div>
                         </div>
                     </div>

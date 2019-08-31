@@ -1,5 +1,5 @@
 <template>
-    <div class="app">
+    <div class="app bg-white">
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile />
             <div class="navbar-brand" to="#">
