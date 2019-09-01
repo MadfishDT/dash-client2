@@ -129,8 +129,9 @@ export default {
             console.log(`page router update cid is ${this.cid}-${cid}`);
             if (this.cid !== cid) {
                 this.cid = cid;
+                this.$service.$contentsservice.categoryChangeSubject.next(cid);
             }
-            this.$service.$contentsservice;
+            
         }
     },
     mounted: function() {},

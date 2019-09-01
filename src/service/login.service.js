@@ -1,9 +1,11 @@
 import { ConfigService } from './config.service';
 import { Subject } from 'rxjs'
+import { ServiceError } from './service.error';
 
 export class LoginService {
 
     constructor(global) {
+        this.gobal = global;
         this.requestService = global.$service.$requestservice;
         //this.RequestService = new RequestService();
         this.config = new ConfigService();
@@ -38,7 +40,8 @@ export class LoginService {
     getUser() {
         if (this.isAthenticateChecked && this.user) {
             return this.user;
-        }
+        } 
+        return null;
     }
 
     getImageUrl(path) {
@@ -69,7 +72,21 @@ export class LoginService {
             return;
         }
     }
-
+    async updataAgreement() {
+        let url = `${this.config.host}/agree`;
+        try {
+            const resultData = await this.requestService.requestPost(url, {});
+            if(resultData.code === 200) {
+                return ServiceError.sucess;
+            } else if(resultData.code === 401){
+                return ServiceError.autherror;
+            } else {
+                return ServiceError.fail;
+            }
+        } catch {
+            return ServiceError.unknown;
+        }
+    }
     async logout() {
         let url = `${this.config.host}/logout`;
         try {

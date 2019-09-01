@@ -57,30 +57,38 @@ export default {
         cTable,
         QBarChart
     },
-     updated() {
-          if (this.$route.query && this.$route.query.cid) {
-                const cid = parseInt(this.$route.query.cid);
-                console.log(`page22222 router update cid is ${this.cid}-${cid}`);
-                
-                if(this.cid !== cid ) {
-                    this.cid = cid;
-                }
-           }
-    },
+   
     mounted: function () {
-        if (this.$route.query && this.$route.query.cid) {
-                console.log("enter page cid loaded");
-                console.log(`dashboard cid is: ${this.cid}`);
-        }
+ 
+     
+    },
+    created: function() {
+        this.$service.$contentsservice.categoryChangeSubject.subscribe((cid) => {
+                console.log('this is sp')
+                this.loadQuestions(cid);
+        });
     },
     data: function() {
         return {
-            paper: sample.items,
+            paper: [],
         };
     },
     methods: {
         clickItems: function() {
            console.log('click items1');
+        }, 
+        async loadQuestions(cid) {
+            console.log('loadQuestions');
+            let result = await this.$service.$contentsservice.getQuestions(cid);
+            if(!result) {
+                console.log('fail load questin fail');      
+            } else {
+                console.log(`sucess load questin fail ${result}`); 
+                const questions = result.map( (item) => {
+                    return JSON.parse(item.data);
+                })
+                this.paper = questions;
+            }
         },
     }
 };
