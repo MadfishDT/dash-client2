@@ -55,18 +55,27 @@ export default {
         back() {
             this.$router.push('/');
         },
+        authError() {
+            this.$bvModal.msgBoxOk('Authentication Error, please Check your account')
+            .then(value => {
+                this.$router.push('/');
+            })
+            .catch(err => {
+                this.$router.push('/');
+            });
+        },
         async submit() {
             if(this.select === 'agree') {
                 const result = await this.$service.$loginservice.updataAgreement();
-                if(result === ServiceError.sucess) {
+                if(result.code === this.$eservice.success) {
                     this.$router.push('/qboards/questions');
-                } else if(result === ServiceError.autherror) {
-                    this.$router.push('/');
+                } else if(result === this.$eservice.autherror) {
+                   this.authError();
                 }
             } else {
                 this.$bvModal.msgBoxOk('Please Check Agreements')
                 .then(value => {
-                    this.boxOne = value
+                    return;
                 })
                 .catch(err => {
                     // An error occurred

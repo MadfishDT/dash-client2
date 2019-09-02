@@ -63,7 +63,7 @@ export default {
      
     },
     created: function() {
-        this.$service.$contentsservice.categoryChangeSubject.subscribe((cid) => {
+        this.contentsService.categoryChangeSubject.subscribe((cid) => {
                 console.log('this is sp')
                 this.loadQuestions(cid);
         });
@@ -71,23 +71,39 @@ export default {
     data: function() {
         return {
             paper: [],
+            contentsService: this.$service.$contentsservice
         };
     },
     methods: {
         clickItems: function() {
            console.log('click items1');
-        }, 
+        },
+        errorAlert(msg, path) {
+            this.$bvModal.msgBoxOk(msg)
+            .then(value => {
+                if(path) {
+                    this.$router.push(path);
+                }
+            })
+            .catch(err => {
+                this.$router.push('/page/500');
+            });
+        },
         async loadQuestions(cid) {
             console.log('loadQuestions');
-            let result = await this.$service.$contentsservice.getQuestions(cid);
-            if(!result) {
-                console.log('fail load questin fail');      
-            } else {
+            let result = await this.contentsService.getQuestions(cid);
+            if(result.code === this.$eservice.success) {
                 console.log(`sucess load questin fail ${result}`); 
-                const questions = result.map( (item) => {
+                const questions = result.data.map( (item) => {
                     return JSON.parse(item.data);
                 })
-                this.paper = questions;
+                this.paper = questions;    
+            } else {
+                if(result.code === this.$eservice.authError) {
+                    this.errorAlert('Not Logined, Please Check your account', '/');
+                } else {
+                    this.errorAlert('Unknown Error')
+                }
             }
         },
     }

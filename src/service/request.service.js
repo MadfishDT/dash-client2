@@ -1,5 +1,5 @@
 export class RequestService {
-    constructor() {
+    constructor(global) {
         this.service = global.$service;
     }
 
@@ -19,7 +19,6 @@ export class RequestService {
             }
 
             xhr.onreadystatechange = () => {
-                //console.log(`${xhr.readyState} ${xhr.status}`);
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     let typeText = xhr.getResponseHeader('Content-Type');
                     let resultData = xhr.response;
@@ -56,9 +55,7 @@ export class RequestService {
             }
 
             xhr.onreadystatechange = () => {
-                //console.log(`${xhr.readyState} ${xhr.status}`);
                 if (xhr.readyState == 4 && xhr.status == 200) {
-                    console.log(`success ${xhr.response}`);
                     let typeText = xhr.getResponseHeader('Content-Type');
                     let resultData = xhr.response;
                     if (typeText) {

@@ -2,6 +2,45 @@ export class ElementItemGenerator {
 
     constructor() {
     }
+    static getFirstValidCategoryFromItems(datas) {
+        if (datas) {
+            for(let item of datas){
+               
+                let parentItemName = item.name;
+                if(!item.children) {
+                    return item.id;
+                }
+                
+                if(item.children && item.children.length > 0) {
+                    for( let citem of item.children)  {
+                        return citem.id;
+                    }
+                }
+            };
+        }
+        return -1;
+    }
+    static genMakeCategoryItemsDisplayName(datas ,cid) {
+        if (datas) {
+            for(let item of datas){
+               
+                let parentItemName = item.name;
+                if(item.id === cid) {
+                    return item.name;
+                }
+                
+                if(item.children && item.children.length > 0) {
+                    for( let citem of item.children)  {
+                        if(citem.id === cid) {
+                            return `${parentItemName}/${citem.name}`;
+                        }
+                    }
+                }
+            };
+            return `not found data`;
+        }
+        return '';
+    }
     static genMakeSidebarCategoryItems(datas) {
         let categories = { 
             items: [

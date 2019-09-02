@@ -91,7 +91,8 @@ export default new Router({
                 {
                     path: 'agree',
                     name: 'Agreement',
-                    component: Agreement
+                    component: Agreement,
+                    beforeEnter: requireAuth(),
                 },
                 {
                     path: '404',

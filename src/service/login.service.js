@@ -18,6 +18,9 @@ export class LoginService {
         this._userProfileSubject = new Subject();
     }
 
+    get serviceError() {
+        return ServiceError;
+    }
     get authChangeSubject() {
         return this._authChange;
     }
@@ -36,7 +39,6 @@ export class LoginService {
     get isAthenticateChecked() {
         return this._isAthenticateChecked;
     }
-
     getUser() {
         if (this.isAthenticateChecked && this.user) {
             return this.user;
@@ -50,17 +52,14 @@ export class LoginService {
     }
 
     setUser(info) {
+        this.user = info;
         if (this.user && this.user.id !== info.id) {
-            this.user = info;
             this.userChangeSubject.next(info);
-        } else if (!this.user) {
-            this.user = info;
-            this.userChangeSubject.next(info);
-        } else {
-            return;
         }
     }
-
+    makeErrorObject(errorStatus, data=null) {
+        return {data: data, code: errorStatus};
+    }
     setUserProfile(info) {
         if (this.userProfile && this.userProfile.id !== info.id) {
             this.userProfile = info;
@@ -72,32 +71,33 @@ export class LoginService {
             return;
         }
     }
+
     async updataAgreement() {
         let url = `${this.config.host}/agree`;
         try {
             const resultData = await this.requestService.requestPost(url, {});
             if(resultData.code === 200) {
-                return ServiceError.sucess;
+                return this.makeErrorObject(ServiceError.success);
             } else if(resultData.code === 401){
-                return ServiceError.autherror;
-            } else {
-                return ServiceError.fail;
-            }
+                return this.makeErrorObject(ServiceError.autherror);
+            } 
+            return this.makeErrorObject(ServiceError.fail);
         } catch {
-            return ServiceError.unknown;
+            return this.makeErrorObject(ServiceError.unknown);;
         }
     }
+
     async logout() {
         let url = `${this.config.host}/logout`;
         try {
-            await this.requestService.requestPost(url, {});
-            return true;
+            const result = await this.requestService.requestPost(url, {});
+            return this.makeErrorObject(ServiceError.success);
         } catch {
-            return false;
+            return this.makeErrorObject(ServiceError.fail);
         }
     }
+
     async adminLogin(email, password, code) {
-        const body = JSON.stringify({ email: email, password: password, code: code });
         let url = `${this.config.host}/adminlogin`;
         this._isAthenticateChecked = true;
         try {
@@ -107,16 +107,17 @@ export class LoginService {
             if (result.result) {
                 this.setUser(result.data);
                 console.log(JSON.stringify(this.user));
-                return true;
+                return this.makeErrorObject(ServiceError.success);
             } else {
                 if (result.code === 401) {
-                    console.log('fail');
+                    return this.makeErrorObject(ServiceError.autherror);
                 }
-                return false;
+                return this.makeErrorObject(ServiceError.fail);
+               
             }
         } catch (e) {
             console.log(`fail login exceptional ${e}`);
-            return false;
+            return this.makeErrorObject(ServiceError.unknown);
         }
     }
     async login(email, password) {
@@ -130,16 +131,16 @@ export class LoginService {
             if (result.result) {
                 this.setUser(result.data);
                 console.log(JSON.stringify(this.user));
-                return true;
+                return this.makeErrorObject(ServiceError.success);
             } else {
                 if (result.code === 401) {
-                    console.log('fail');
+                    return this.makeErrorObject(ServiceError.autherror);
                 }
-                return false;
+                return this.makeErrorObject(ServiceError.fail);
             }
         } catch (e) {
             console.log(`fail login exceptional ${e}`);
-            return false;
+            return this.makeErrorObject(ServiceError.unknown);
         }
     }
 
@@ -148,14 +149,19 @@ export class LoginService {
         try {
             let result = await this.requestService.
                 requestGet(url);
-            if (result) {
-                this.setUserProfile(result.data);
-                return result.data;
+            if (result.result) {
+                if(result.code == 200) {
+                    this.setUserProfile(result.data);
+                    return this.makeErrorObject(ServiceError.success, result.data);    
+                } 
             } else {
-                return null;
+                if(result.code == 401){
+                    return this.makeErrorObject(ServiceError.autherror);
+                } 
+                return this.makeErrorObject(ServiceError.fail);
             }
         } catch (e) {
-            return null;
+            return this.makeErrorObject(ServiceError.unknown);
         }
     }
 
@@ -167,12 +173,15 @@ export class LoginService {
                 requestGet(url);
             if (result.result) {
                 this.setUser(result.data);
-                return result.data;
+                return this.makeErrorObject(ServiceError.success, result.data);
             } else {
-                return null;
+                if(result.code == 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                } 
+                return this.makeErrorObject(ServiceError.fail);
             }
         } catch (e) {
-            return null;
+            return this.makeErrorObject(ServiceError.unknown);
         }
     }
 }

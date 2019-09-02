@@ -2,7 +2,7 @@ export class ServiceError {
     constructor() {
     }
 
-    static get sucess() { return 'sucess'; }
+    static get success() { return 'success'; }
     static get autherror() { return 'autherror'; }
     static get fail() { return'fail'; }
     static get unknown() { return'unknown'; }

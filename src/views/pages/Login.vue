@@ -105,14 +105,15 @@ export default {
             model: {
                 email: "dev@dev.com",
                 password: "dev"
-            }
+            },
+            loginService: this.$service.$loginservice
         };
     },
     async mounted() {
-        const result = await this.$service.$loginservice.getAuthenticated();
-        this.isLogined = result ? true : false;
-        this.adjustLoginFormUI(result);
-        const authChangeSubject = await this.$service.$loginservice
+        const result = await this.loginService.getAuthenticated();
+        this.isLogined = result.code === this.$eservice.success ? true : false;
+        this.adjustLoginFormUI(result.data);
+        const authChangeSubject = await this.loginService
             .authChangeSubject;
         authChangeSubject.subscribe(isAuthenticated => {
             this.isLogined = isAuthenticated;
@@ -142,7 +143,7 @@ export default {
             }
         },
         goToWork() {
-            const user = this.$service.$loginservice.getUser();
+            const user = this.loginService.getUser();
             if( user ) {
                 if(user.agreement){
                     this.$router.push("/qboards/questions");
@@ -153,11 +154,11 @@ export default {
         },
         login: async function() {
             if (this.model.email && this.model.password) {
-                let result = await this.$service.$loginservice.login(
+                let result = await this.loginService.login(
                     this.model.email,
                     this.model.password
                 );
-                if (result) {
+                if (result.code == this.$eservice.success) {
                     this.showAlert("Login Suceess");
                     this.goToWork();
                 } else {
@@ -172,8 +173,8 @@ export default {
             this.dismissCountdown = 2;
         },
         logout: async function() {
-            const result = await this.$service.$loginservice.logout();
-            if (result) {
+            const result = await this.loginService.logout();
+            if (result.code === this.$eservice.success) {
                 this.isLogined = false;
                 this.showAlert("Logout success");
             } else {

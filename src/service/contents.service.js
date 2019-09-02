@@ -1,15 +1,20 @@
 import { ConfigService } from './config.service';
 import { Subject } from 'rxjs'
+import { ServiceError } from './service.error';
 
 export class ContentsService {
 
     constructor(global) {
         this.requestService = global.$service.$requestservice;
+        this.loginService = global.$service.$loginservice;
         this.config = new ConfigService();
         this._categoriesSubject = new Subject();
         this._categoryChangeSubject = new Subject();
         this._categorySelectedSubject = new Subject();
 
+    }
+    get serviceError() {
+        return ServiceError;
     }
     emitChangeCategory(category_id) {
         this._categoryChangeSubject.next(category_id);
@@ -20,18 +25,24 @@ export class ContentsService {
     get categoriesSubject() {
         return this._categoriesSubject;
     }
+    makeErrorObject(errorStatus, data=null) {
+        return {data: data, code: errorStatus};
+    }
     async getCategories() {
         let url = `${this.config.host}/categories`;
         try {
             let result = await this.requestService.
                 requestGet(url);
             if (result.result) {
-                return result.data;
+                return this.makeErrorObject(ServiceError.success, result.data)
             } else {
-                return null;
+                if(result.code == 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
             }
         } catch (e) {
-            return null;
+            return this.makeErrorObject(ServiceError.unknown);
         }
     }
     async getQuestions(id) {
@@ -40,22 +51,32 @@ export class ContentsService {
             let result = await this.requestService.
                 requestGet(url);
             if (result.result) {
-                return result.data;
+                return this.makeErrorObject(ServiceError.success,result.data);
             } else {
-                return null;
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
             }
         } catch (e) {
-            return null;
+            return this.makeErrorObject(ServiceError.unknown);
         }
     }
     async addAnswers(categoriid, data) {
         let url = `${this.config.host}/answers`;
-        let result = await this.requestService.requestPost(url, JSON.stringify({cid: categoriid, answers: data}),
-        [{ kind: 'Content-Type', value: 'application/json' }]);
-        if (result.result) {
-            return true
-        } else {
-            return false;
+        try {
+            let result = await this.requestService.requestPost(url, JSON.stringify({cid: categoriid, answers: data}),
+            [{ kind: 'Content-Type', value: 'application/json' }]);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
         }
     }
 }

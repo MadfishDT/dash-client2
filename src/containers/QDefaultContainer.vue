@@ -30,7 +30,6 @@
                     <div>
                         <div class="text-muted small">{{this.user.fullname}}</div>
                         <div class="text-muted small font-weight-bold">{{this.user.company}}</div>
-                       
                     </div>
                 </div>
                 <div class="dropdown-divider mt-0" style="border-color:gray;" />
@@ -40,6 +39,11 @@
                 <SidebarMinimizer />
             </AppSidebar>
             <main class="main">
+                <b-breadcrumb>
+                    <div>
+                        {{this.questionsTitle}}
+                    </div>
+                </b-breadcrumb>
                 <div class="container-fluid mt-2">
                     <router-view></router-view>
                 </div>
@@ -107,8 +111,11 @@ export default {
                 imageUrl: "empty",
                 fullname: "empty"
             },
+            questionsTitle: '',
             categories: [],
-            cid: -1
+            cid: -1,
+            rawCategoriesDatas: null,
+            contentsService: this.$service.$contentsservice,
         };
     },
     created: function() {
@@ -125,13 +132,22 @@ export default {
     },
     updated() {
         if (this.$route.query && this.$route.query.cid) {
-            const cid = parseInt(this.$route.query.cid);
+            let cid = parseInt(this.$route.query.cid);
             console.log(`page router update cid is ${this.cid}-${cid}`);
             if (this.cid !== cid) {
                 this.cid = cid;
-                this.$service.$contentsservice.categoryChangeSubject.next(cid);
+                this.contentsService.categoryChangeSubject.next(cid);
+                this.questionsTitle = ElementItemGenerator.
+                genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
+            } 
+        }else if(this.cid == -1) {
+            let cid = ElementItemGenerator.getFirstValidCategoryFromItems(this.rawCategoriesDatas);
+            if(cid && cid != -1) {
+                this.cid = cid;
+                this.questionsTitle = ElementItemGenerator.
+                genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
+                this.contentsService.categoryChangeSubject.next(cid);
             }
-            
         }
     },
     mounted: function() {},
@@ -140,11 +156,10 @@ export default {
             console.log("click items1");
         },
         async loadCategories() {
-            let result = await this.$service.$contentsservice.getCategories();
-            if (result) {
-                this.categories = ElementItemGenerator.genMakeSidebarCategoryItems(
-                    result
-                );
+            this.result = await this.contentsService.getCategories();
+            if (this.result.code === this.$eservice.success) {
+                this.rawCategoriesDatas = this.result.data;
+                this.categories = ElementItemGenerator.genMakeSidebarCategoryItems(this.result.data);
             }
         },
         setUserInfo(user) {
@@ -166,7 +181,7 @@ export default {
     computed: {
         name() {
             return this.$route.name;
-        }
+        },
     }
 };
 </script>
