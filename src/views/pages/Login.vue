@@ -61,9 +61,9 @@
                                             >{{this.loginForm.loginAndLogoutText}}</b-button>
                                         </b-col>
                                     </b-row>
-                                    <b-row>
+                                    <b-row v-if="!isLogined">
                                         <b-col cols="6">
-                                            <b-button variant="link" class="px-0">Register</b-button>
+                                            <b-button  href="/#/register" variant="link" class="px-0">Register</b-button>
                                         </b-col>
                                         <b-col cols="6" class="text-right">
                                             <b-button variant="link" class="px-0">Forgot password?</b-button>

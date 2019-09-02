@@ -28,6 +28,20 @@ export class ContentsService {
     makeErrorObject(errorStatus, data=null) {
         return {data: data, code: errorStatus};
     }
+    async getCompanys() {
+        let url = `${this.config.host}/comp`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success, result.data)
+            } else {
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async getCategories() {
         let url = `${this.config.host}/categories`;
         try {
