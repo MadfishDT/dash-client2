@@ -3,8 +3,11 @@ const running_env = {
     stage : 1,
     prod : 2,
 }
+
 let instance;
+
 export class ConfigService {
+
     constructor() {
         if (instance) return instance;
         this.environmnet = running_env.dev;

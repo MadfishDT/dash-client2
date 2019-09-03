@@ -9,12 +9,13 @@ import BootstrapVue from 'bootstrap-vue'
 import App from './App'
 import router from './router'
 import Services from './service/service'
+import VueDaumPostcode from "vue-daum-postcode"
 // todo
 // cssVars()
 
 Vue.use(BootstrapVue)
 Vue.use(Services)
-
+Vue.use(VueDaumPostcode)
 
 /* eslint-disable no-new */
 new Vue({
