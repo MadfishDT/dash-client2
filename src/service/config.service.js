@@ -12,11 +12,14 @@ export class ConfigService {
     }
 
     get host() {
-      //  if(this.mode === 'dev') {
-      //       return `http://localhost:9090`;
-      //  } else {
+        
+        if(process.env.NODE_ENV === 'development') {
+            console.log('dev-mode');
+            return `http://localhost:9090`;
+        } else {
+            console.log('prod-mode');
             return `http://35.193.127.219:9090`;
-      //  }
+        }
     }
     
 }
