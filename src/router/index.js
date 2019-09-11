@@ -1,10 +1,11 @@
+
 import Vue from 'vue'
 import Router from 'vue-router'
 
 // Containers
 const DefaultContainer = () => import('@/containers/DefaultContainer')
 const QDefaultContainer = () => import('@/containers/QDefaultContainer')
-
+const QCDefaultContainer = () => import('@/containers/QCDefaultContainer')
 
 // Views
 const Dashboard = () => import('@/views/Dashboard')
@@ -56,13 +57,37 @@ const Modals = () => import('@/views/notifications/Modals')
 const Page404 = () => import('@/views/pages/Page404')
 const Page500 = () => import('@/views/pages/Page500')
 const Login = () => import('@/views/pages/Login')
+const AdminLogin = () => import('@/views/pages/AdminLogin')
 const Register = () => import('@/views/pages/Register')
 const Agreement = () => import('@/views/pages/Agreement')
-
+const QuestionsCreator = () => import('@/views/pages/QuestionsCreator')
 
 // Users
 const Users = () => import('@/views/users/Users')
 const User = () => import('@/views/users/User')
+
+
+import * as SurveyVue from "survey-vue";
+import "bootstrap/dist/css/bootstrap.css";
+var Survey = SurveyVue.Survey;
+Survey.cssType = "bootstrap";
+
+import * as widgets from "surveyjs-widgets";
+
+import "inputmask/dist/inputmask/phone-codes/phone.js";
+
+widgets.icheck(SurveyVue);
+widgets.select2(SurveyVue);
+widgets.inputmask(SurveyVue);
+widgets.jquerybarrating(SurveyVue);
+widgets.jqueryuidatepicker(SurveyVue);
+widgets.nouislider(SurveyVue);
+widgets.select2tagbox(SurveyVue);
+widgets.signaturepad(SurveyVue);
+widgets.sortablejs(SurveyVue);
+widgets.ckeditor(SurveyVue);
+widgets.autocomplete(SurveyVue);
+widgets.bootstrapslider(SurveyVue);
 
 Vue.use(Router)
 
@@ -82,7 +107,7 @@ export default new Router({
     routes: [
         {
             path: '/page',
-            redirect: '/login',
+            redirect: '/500',
             name: 'Pages',
             component: {
                 render(c) { return c('router-view') }
@@ -120,9 +145,29 @@ export default new Router({
                     component: Login
                 },
                 {
+                    path: 'admin',
+                    name: 'Admin',
+                    component: AdminLogin
+                },
+                {
                     path: 'register',
                     name: 'Register',
                     component: Register
+                }
+            ]
+        },
+        {
+            path: '/cqboards',
+            redirect: '/cqboards/cquestions',
+            name: 'CQuestions',
+            component: QCDefaultContainer,
+            beforeEnter: requireAuth(),
+            children: [
+                {
+                    path: 'cquestions',
+                    name: 'cQuestions',
+                    component: QuestionsCreator,
+                    beforeEnter: requireAuth(),
                 }
             ]
         },

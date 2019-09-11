@@ -1,7 +1,6 @@
 <template>
     <div class="app flex-row align-items-center">
         <div class="container">
-           
             <b-row class="justify-content-center">
                 <b-col md="5">
                     <b-card-group>
@@ -11,22 +10,29 @@
                                     <div>
                                         <b-row>
                                             <b-col cols="10">
-                                                <h1 class="mt-1" >QUANTIFIED ESG</h1>
+                                                <h1 class="mt-1">QUANTIFIED ESG</h1>
                                             </b-col>
                                             <b-col>
-                                                <div  id="icon-backtowork">
-                                                    <i v-if="isLogined" @click="goToWork" class="icon-login icons font-2xl d-block mt-3"></i>
+                                                <div id="icon-backtowork">
+                                                    <i
+                                                        v-if="isLogined"
+                                                        @click="goToWork"
+                                                        class="icon-login icons font-2xl d-block mt-3"
+                                                    ></i>
                                                 </div>
-                                                 <b-tooltip target="icon-backtowork" title="back to work"></b-tooltip>
+                                                <b-tooltip
+                                                    target="icon-backtowork"
+                                                    title="back to work"
+                                                ></b-tooltip>
                                             </b-col>
                                         </b-row>
                                     </div>
-                                    <b-row>
-                                        <b-col cols="8">
+                                     <b-row>
+                                        <b-col cols="9">
                                         <p class="text-muted mt-1">Sign In to your account</p>
                                         </b-col>
                                         <b-col>
-                                           <b-button variant="link" href="/#/admin" class="px-0 mb-1">Admin Login</b-button>
+                                           <b-button variant="link" href="/#/admin" class="px-0 mb-1">Login</b-button>
                                         </b-col>
                                     </b-row>
                                     <b-input-group class="mb-3">
@@ -59,21 +65,29 @@
                                             v-model="model.password"
                                         />
                                     </b-input-group>
+                                    <b-input-group class="mb-4">
+                                        <b-input-group-prepend>
+                                            <b-input-group-text>
+                                                <i>code</i>
+                                            </b-input-group-text>
+                                        </b-input-group-prepend>
+                                        <b-form-input
+                                            :readonly="this.loginForm.readOnly"
+                                            type="password"
+                                            class="form-control"
+                                            placeholder="code"
+                                            autocomplete="current-password"
+                                            v-model="model.code"
+                                        />
+                                    </b-input-group>
                                     <b-row>
                                         <b-col cols="12">
-                                            <b-button id="icon-backtowork2"
+                                            <b-button
+                                                id="icon-backtowork2"
                                                 block
                                                 :variant="this.loginForm.color"
                                                 @click="authenticate"
                                             >{{this.loginForm.loginAndLogoutText}}</b-button>
-                                        </b-col>
-                                    </b-row>
-                                    <b-row v-if="!isLogined">
-                                        <b-col cols="6">
-                                            <b-button  href="/#/register" variant="link" class="px-0">Register</b-button>
-                                        </b-col>
-                                        <b-col cols="6" class="text-right">
-                                            <b-button variant="link" class="px-0">Forgot password?</b-button>
                                         </b-col>
                                     </b-row>
                                 </b-form>
@@ -110,8 +124,9 @@ export default {
                 color: "primary"
             },
             model: {
-                email: "dev@dev.com",
-                password: "dev"
+                email: "admin@admin.com",
+                password: "admin",
+                code: 'admincode'
             },
             loginService: this.$service.$loginservice
         };
@@ -120,8 +135,7 @@ export default {
         const result = await this.loginService.getAuthenticated();
         this.isLogined = result.code === this.$eservice.success ? true : false;
         this.adjustLoginFormUI(result.data);
-        const authChangeSubject = await this.loginService
-            .authChangeSubject;
+        const authChangeSubject = await this.loginService.authChangeSubject;
         authChangeSubject.subscribe(isAuthenticated => {
             this.isLogined = isAuthenticated;
         });
@@ -131,12 +145,14 @@ export default {
             if (userProfile) {
                 this.model.email = userProfile.email;
                 this.model.password = "*********";
+                this.model.code = "*************";
                 this.loginForm.readOnly = true;
                 this.loginForm.color = "secondary";
                 this.loginForm.loginAndLogoutText = "Logout";
             } else {
-                this.model.email = "dev@dev.com";
-                this.model.password = "dev";
+                this.model.email = "admin@admin.com";
+                this.model.password = "admin";
+                this.model.code = "admincode";
                 this.loginForm.readOnly = false;
                 this.loginForm.color = "primary";
                 this.loginForm.loginAndLogoutText = "Login";
@@ -151,19 +167,16 @@ export default {
         },
         goToWork() {
             const user = this.loginService.getUser();
-            if( user ) {
-                if(user.agreement){
-                    this.$router.push("/qboards/questions");
-                } else {
-                    this.$router.push("/page/agree");
-                }
+            if (user) {
+                this.$router.push("/cqboards");
             }
         },
         login: async function() {
-            if (this.model.email && this.model.password) {
-                let result = await this.loginService.login(
+            if (this.model.email && this.model.password && this.model.code) {
+                let result = await this.loginService.adminLogin(
                     this.model.email,
-                    this.model.password
+                    this.model.password,
+                    this.model.code,
                 );
                 if (result.code == this.$eservice.success) {
                     this.showAlert("Login Suceess");

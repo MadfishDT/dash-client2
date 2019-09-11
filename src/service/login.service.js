@@ -101,6 +101,7 @@ export class LoginService {
         let url = `${this.config.host}/adminlogin`;
         this._isAthenticateChecked = true;
         try {
+            const body = JSON.stringify({ email: email, password: password, code: code });
             let result = await this.requestService.
                 requestPost(url, body, [{ kind: 'Content-Type', value: 'application/json' }, { kind: 'X-Auth-Types', value: 'admin' }]);
 

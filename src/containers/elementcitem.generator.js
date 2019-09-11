@@ -1,4 +1,4 @@
-export class ElementItemGenerator {
+export class ElementCItemGenerator {
 
     constructor() {
     }
@@ -59,7 +59,7 @@ export class ElementItemGenerator {
                
                 let resultItem = {
                     name: item.name,
-                    url: `/qboards/questions?div${item.id}=q&cid=${item.id}`,
+                    url: `/cqboards/cquestions?div${item.id}=q&cid=${item.id}`,
                     icon: 'icon-doc',
                 };
                 
@@ -69,7 +69,7 @@ export class ElementItemGenerator {
                     item.children.forEach( (citem, index) => {
                         let childItem = {
                             name: citem.name,
-                            url: `/qboards/questions?div${citem.id}=q&cid=${citem.id}`,
+                            url: `/cqboards/cquestions?div${citem.id}=q&cid=${citem.id}`,
                             icon: 'icon-arrow-right-circle',
                             attributes: {
                                class: 'ml-3'   
@@ -85,4 +85,4 @@ export class ElementItemGenerator {
     }
 }
 
-export default ElementItemGenerator;
+export default ElementCItemGenerator;

@@ -32,7 +32,7 @@
                         <div class="text-muted small font-weight-bold">{{this.user.company}}</div>
                     </div>
                 </div>
-                <div class="dropdown-divider mt-0" style="border-color:gray;" />
+                <div class="dropdown-divider mt-0 mb-0" style="border-color:gray;" />
                 <b-tooltip target="img_profile" :title="this.user.fullname"></b-tooltip>
                 <SidebarNav class="ml-0 pl-0" :navItems="this.categories.items" v-on:click="clickItems()"></SidebarNav>
                 <SidebarFooter />
@@ -81,11 +81,10 @@ import {
 } from "@coreui/vue";
 import DefaultAside from "./DefaultAside";
 import DefaultHeaderDropdownAccnt from "./DefaultHeaderDropdownAccnt";
-import ElementItemGenerator from "./elementitem.generator";
-import QCDefaultContainer from "../views/pages/QuestionsCreator";
+import ElementCItemGenerator from "./elementcitem.generator";
 
 export default {
-    name: "QDefaultContainer",
+    name: "QCDefaultContainer",
     components: {
         AsideToggler,
         AppHeader,
@@ -101,8 +100,7 @@ export default {
         SidebarHeader,
         SidebarNav,
         SidebarMinimizer,
-        AppHeaderDropdown,
-        QCDefaultContainer
+        AppHeaderDropdown
     },
     data() {
         return {
@@ -139,14 +137,14 @@ export default {
             if (this.cid !== cid) {
                 this.cid = cid;
                 this.contentsService.categoryChangeSubject.next(cid);
-                this.questionsTitle = ElementItemGenerator.
+                this.questionsTitle = ElementCItemGenerator.
                 genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
             } 
-        }else if(this.cid == -1) {
-            let cid = ElementItemGenerator.getFirstValidCategoryFromItems(this.rawCategoriesDatas);
+        }else if(this.cid == -1) { 
+            let cid = ElementCItemGenerator.getFirstValidCategoryFromItems(this.rawCategoriesDatas);
             if(cid && cid != -1) {
                 this.cid = cid;
-                this.questionsTitle = ElementItemGenerator.
+                this.questionsTitle = ElementCItemGenerator.
                 genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
                 this.contentsService.categoryChangeSubject.next(cid);
             }
@@ -161,7 +159,7 @@ export default {
             this.result = await this.contentsService.getCategories();
             if (this.result.code === this.$eservice.success) {
                 this.rawCategoriesDatas = this.result.data;
-                this.categories = ElementItemGenerator.genMakeSidebarCategoryItems(this.result.data);
+                this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(this.result.data);
             }
         },
         setUserInfo(user) {

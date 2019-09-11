@@ -17,11 +17,18 @@
                                 <p class="text-muted">Create your account</p>
                                 <b-row>
                                     <b-col class="col-md-3">
-                                        <img
-                                            src="img/profile.png"
-                                            class="mt-3 rounded img-thumbnail mb-3"
+                                        <b-row>
+                                        <img type="file"
+                                            :src="userImage"
+                                            class="mt-4 rounded img-thumbnail mb-1"
                                             alt="Profile"
                                         />
+                                        </b-row>
+                                        <b-row>
+                                            <input type="file" ref="profileImgFrom"  @change="previewFiles" style="display: none"/>
+                                            <b-button class="mb-2" variant="danger" @click="$refs.profileImgFrom.click()" block>
+                                            <i class="fa fa-folder fa-lg"/></b-button>
+                                        </b-row>
                                     </b-col>
                                     <b-col class="col-md-9">
                                         <b-row>
@@ -37,9 +44,12 @@
                                                         class="form-control"
                                                         placeholder="Username"
                                                         autocomplete="username"
+                                                        v-model="userName"
                                                     />
                                                 </b-input-group>
                                             </b-col>
+                                            </b-row>
+                                            <b-row>    
                                             <b-col>
                                                 <b-input-group class="mb-3">
                                                     <b-input-group-prepend>
@@ -50,6 +60,7 @@
                                                         class="form-control"
                                                         placeholder="Email"
                                                         autocomplete="email"
+                                                        v-model="email"
                                                     />
                                                 </b-input-group>
                                             </b-col>
@@ -67,6 +78,7 @@
                                                         class="form-control"
                                                         placeholder="Password"
                                                         autocomplete="new-password"
+                                                        v-model="passoword"
                                                     />
                                                 </b-input-group>
                                             </b-col>
@@ -84,6 +96,7 @@
                                                         class="form-control"
                                                         placeholder="Repeat Password"
                                                         autocomplete="new-password"
+                                                        v-model="rePassword"
                                                     />
                                                 </b-input-group>
                                             </b-col>
@@ -121,6 +134,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         placeholder="Your company name"
+                                                        v-model="company"
                                                     />
                                                 </b-input-group>
                                             </b-col>
@@ -206,6 +220,12 @@ export default {
                 empty: -1,
                 manually: -2
             },
+            userImage: 'img/profile.png',
+            userName: '',
+            email: '',
+            password: '',
+            rePassword: '',
+            company: '',
             resultAddress: null,
             address1: '',
             address2: '',
@@ -225,11 +245,17 @@ export default {
         this.companyOptions = options;
     },
     methods: {
+        previewFiles(element) {
+            this.userImage = this.$refs.profileImgFrom.files[0];
+        },
         getCompanySelectedItem(item) {
             console.log(item);
         },
         searchAddress() {
             
+        },
+        InputUser() {
+
         },
         handleAddressOk() {
             console.log(this.resultAddress);
