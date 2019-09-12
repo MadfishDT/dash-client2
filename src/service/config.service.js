@@ -21,7 +21,7 @@ export class ConfigService {
             return `http://localhost:9090`;
         } else {
             console.log('prod-mode');
-            return `http://35.193.127.219:9090`;
+            return `http://qesg-dev.ddns.net:9090`;
         }
     }
     
