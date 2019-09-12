@@ -75,7 +75,7 @@ Survey.cssType = "bootstrap";
 import * as widgets from "surveyjs-widgets";
 
 import "inputmask/dist/inputmask/phone-codes/phone.js";
-
+import { ServiceError } from '../service/service.error';
 widgets.icheck(SurveyVue);
 widgets.select2(SurveyVue);
 widgets.inputmask(SurveyVue);
@@ -94,10 +94,12 @@ Vue.use(Router)
 const requireAuth = () => async (from, to, next) => {
     console.log("check logined");
     let result = await Vue.prototype.$service.$loginservice.getAuthenticated();
-    if(!result) {
-      return next('/');
+    if(result.code != ServiceError.success) {
+    console.log("check not loadined");
+      return next('/login');
     } else {
-      next();
+        console.log("check not loaded");
+      return next();
     }
 }
 export default new Router({

@@ -124,9 +124,9 @@ export default {
                 color: "primary"
             },
             model: {
-                email: "admin@admin.com",
-                password: "admin",
-                code: 'admincode'
+                email: '',
+                password: '',
+                code: ''
             },
             loginService: this.$service.$loginservice
         };
@@ -150,9 +150,9 @@ export default {
                 this.loginForm.color = "secondary";
                 this.loginForm.loginAndLogoutText = "Logout";
             } else {
-                this.model.email = "admin@admin.com";
-                this.model.password = "admin";
-                this.model.code = "admincode";
+                this.model.email = '';
+                this.model.password = '';
+                this.model.code = '';
                 this.loginForm.readOnly = false;
                 this.loginForm.color = "primary";
                 this.loginForm.loginAndLogoutText = "Login";

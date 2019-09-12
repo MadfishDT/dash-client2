@@ -101,17 +101,17 @@ export default {
     name: "Login",
     data() {
         return {
-            alterText: "no data",
+            alterText: 'no data',
             dismissCountdown: 0,
             isLogined: false,
             loginForm: {
-                loginAndLogoutText: "Login",
+                loginAndLogoutText: 'Login',
                 readOnly: false,
-                color: "primary"
+                color: 'primary'
             },
             model: {
-                email: "dev@dev.com",
-                password: "dev"
+                email: '',
+                password: ''
             },
             loginService: this.$service.$loginservice
         };
@@ -135,8 +135,8 @@ export default {
                 this.loginForm.color = "secondary";
                 this.loginForm.loginAndLogoutText = "Logout";
             } else {
-                this.model.email = "dev@dev.com";
-                this.model.password = "dev";
+                this.model.email = '';
+                this.model.password = '';
                 this.loginForm.readOnly = false;
                 this.loginForm.color = "primary";
                 this.loginForm.loginAndLogoutText = "Login";
