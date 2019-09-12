@@ -32,7 +32,7 @@
                                         <p class="text-muted mt-1">Sign In to your account</p>
                                         </b-col>
                                         <b-col>
-                                           <b-button variant="link" href="/#/admin" class="px-0 mb-1">Login</b-button>
+                                           <b-button variant="link" href="/#/login" class="px-0 mb-1">Login</b-button>
                                         </b-col>
                                     </b-row>
                                     <b-input-group class="mb-3">

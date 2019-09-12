@@ -15,7 +15,7 @@ export class ConfigService {
     }
 
     get host() {
-        
+     
         if(process.env.NODE_ENV === 'development') {
             console.log('dev-mode');
             return `http://localhost:9090`;
