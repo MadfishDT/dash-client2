@@ -1,8 +1,12 @@
 <template>
+<div class="mt-4">
     <div id="surveyCreatorContainer"></div>
+</div>
 </template>
 
 <script>
+
+import { ServiceError } from '../../service/service.error';
 import * as SurveyCreator from "survey-creator";
 import "survey-creator/survey-creator.css";
 
@@ -28,7 +32,8 @@ export default {
     name: "questions-creator",
     data() {
         return {
-            contentsService: this.$service.$contentsservice
+            contentsService: this.$service.$contentsservice,
+            cid: -1
         };
     },
     created: function() {
@@ -37,7 +42,7 @@ export default {
         });
     },
     mounted() {
-        let options = { showEmbededSurveyTab: false };
+        let options = { showEmbededSurveyTab: false, showJSONEditorTab: false };
 
         var mainColor = "#747a74";
         var mainHoverColor = "#abb3ab";
@@ -54,23 +59,47 @@ export default {
         defaultThemeColorsEditor["$primary-hover-color"] = mainHoverColor;
         defaultThemeColorsEditor["$primary-text-color"] = textColor;
         defaultThemeColorsEditor["$selection-border-color"] = mainColor;
+        const selfThis = this;
         this.surveyCreator = new SurveyCreator.SurveyCreator(
             "surveyCreatorContainer",
             options
         );
-        this.surveyCreator.saveSurveyFunc = function() {
+        this.surveyCreator.saveSurveyFunc = async function() {
             console.log(JSON.stringify(this.text));
+            if(this.text && selfThis.cid != -1) {
+                console.log('addCQuestions');
+                let result = await selfThis.contentsService.addCQuestions(selfThis.cid, JSON.parse(this.text));
+                if(result.code == ServiceError.success) {
+                    await selfThis.showAlert("저장 성공");
+                } else {
+                    await selfThis.showAlert("저장 실패");
+                }
+            }
         };
     },
     methods: {
          async loadCQuestions(cid) {
             console.log('loadQuestions');
-          
+            
+            if(this.cid != cid) {
+                this.cid = cid;
+                let result = await this.contentsService.getCQuestions(cid);
+
+                if(result.code == ServiceError.success) {
+                    console.log(`${JSON.stringify(result.data)}`);
+                    this.surveyCreator.text = result.data.data;
+                } else {
+                    this.surveyCreator.text = '';
+                }
+                
+            }
         },
         async saveCQuestions(cid) {
             console.log('saveCQuestions');
-         
-        }
+        },
+        showAlert: async function(msg) {
+             return this.$bvModal.msgBoxOk(msg);
+        },
     }
 };
 </script>

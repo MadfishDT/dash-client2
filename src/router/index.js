@@ -61,6 +61,7 @@ const AdminLogin = () => import('@/views/pages/AdminLogin')
 const Register = () => import('@/views/pages/Register')
 const Agreement = () => import('@/views/pages/Agreement')
 const QuestionsCreator = () => import('@/views/pages/QuestionsCreator')
+const CategoriesCreator = () => import('@/views/pages/CategoriesCreator');
 
 // Users
 const Users = () => import('@/views/users/Users')
@@ -109,7 +110,7 @@ export default new Router({
     routes: [
         {
             path: '/page',
-            redirect: '/500',
+            redirect: '/page/500',
             name: 'Pages',
             component: {
                 render(c) { return c('router-view') }
@@ -156,6 +157,22 @@ export default new Router({
                     name: 'Register',
                     component: Register
                 }
+            ]
+        },
+        {
+            path: '/cac',
+            redirect: '/cac/catecreator',
+            name: 'CCategoriesCreator',
+            component: {
+                render(c) { return c('router-view') }
+            },
+            beforeEnter: requireAuth(),
+            children: [
+                {
+                    path: 'catecreator',
+                    name: 'Catecreator',
+                    component: CategoriesCreator
+                },
             ]
         },
         {
