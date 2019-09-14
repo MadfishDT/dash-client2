@@ -6,23 +6,19 @@
         </template>
         <template slot="dropdown">
             <b-dropdown-header tag="div" class="text-center">
-                <strong>Account</strong>
+                <strong>계정</strong>
             </b-dropdown-header>
             <b-dropdown-item @click="logout">
-                <i class="fa fa-lock" /> logout
+                <i class="fa fa-lock" /> 로그 아웃
             </b-dropdown-item>
             <b-dropdown-item>
-                <i class="fa fa-user" /> profile
-            </b-dropdown-item>
-            <b-dropdown-item>
-                <i class="fa fa-tasks" /> message
-                <b-badge variant="danger">{{ itemsCount }}</b-badge>
+                <i class="fa fa-user" /> 프로필
             </b-dropdown-item>
             <b-dropdown-header tag="div" class="text-center">
-                <strong>Settings</strong>
+                <strong>설정들</strong>
             </b-dropdown-header>
             <b-dropdown-item>
-                <i class="fa fa-wrench" /> Settings
+                <i class="fa fa-wrench" /> 설정
             </b-dropdown-item>
         </template>
     </AppHeaderDropdown>
@@ -45,10 +41,10 @@ export default {
         logout: async function() {
             const result = await this.$service.$loginservice.logout();
             if (result) {
-                await this.showAlert("Logout success");
+                await this.showAlert("로그 아웃 성공");
                 this.$router.push('/');
             } else {
-               await this.showAlert("Logout fail");
+               await this.showAlert("로그 아웃 실패");
             }
             this.adjustLoginFormUI();
         },

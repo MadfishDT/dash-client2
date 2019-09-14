@@ -28,11 +28,11 @@
                                         </b-row>
                                     </div>
                                      <b-row>
-                                        <b-col cols="9">
-                                        <p class="text-muted mt-1">Sign In to your account</p>
+                                        <b-col cols="8">
+                                        <p class="text-muted mt-1">로그인 하세요</p>
                                         </b-col>
                                         <b-col>
-                                           <b-button variant="link" href="/#/login" class="px-0 mb-1">Login</b-button>
+                                           <b-button variant="link" href="/#/login" class="px-0 mb-1">일반 로그인</b-button>
                                         </b-col>
                                     </b-row>
                                     <b-input-group class="mb-3">
@@ -45,7 +45,7 @@
                                             :readonly="this.loginForm.readOnly"
                                             type="text"
                                             class="form-control"
-                                            placeholder="Username"
+                                            placeholder="이메일"
                                             autocomplete="username email"
                                             v-model="model.email"
                                         />
@@ -60,7 +60,7 @@
                                             :readonly="this.loginForm.readOnly"
                                             type="password"
                                             class="form-control"
-                                            placeholder="Password"
+                                            placeholder="암호"
                                             autocomplete="current-password"
                                             v-model="model.password"
                                         />
@@ -68,14 +68,14 @@
                                     <b-input-group class="mb-4">
                                         <b-input-group-prepend>
                                             <b-input-group-text>
-                                                <i>code</i>
+                                                <i>코드</i>
                                             </b-input-group-text>
                                         </b-input-group-prepend>
                                         <b-form-input
                                             :readonly="this.loginForm.readOnly"
                                             type="password"
                                             class="form-control"
-                                            placeholder="code"
+                                            placeholder="관리자 코드"
                                             autocomplete="current-password"
                                             v-model="model.code"
                                         />
@@ -119,7 +119,7 @@ export default {
             dismissCountdown: 0,
             isLogined: false,
             loginForm: {
-                loginAndLogoutText: "Login",
+                loginAndLogoutText: "로그인",
                 readOnly: false,
                 color: "primary"
             },
@@ -148,14 +148,14 @@ export default {
                 this.model.code = "*************";
                 this.loginForm.readOnly = true;
                 this.loginForm.color = "secondary";
-                this.loginForm.loginAndLogoutText = "Logout";
+                this.loginForm.loginAndLogoutText = "로그아웃";
             } else {
                 this.model.email = '';
                 this.model.password = '';
                 this.model.code = '';
                 this.loginForm.readOnly = false;
                 this.loginForm.color = "primary";
-                this.loginForm.loginAndLogoutText = "Login";
+                this.loginForm.loginAndLogoutText = "로그인";
             }
         },
         authenticate: async function() {

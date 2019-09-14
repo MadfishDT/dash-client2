@@ -7,7 +7,7 @@
             </div>
             <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" />
             <b-navbar-nav class="ml-auto">
-                <DefaultHeaderDropdownAccnt />
+                <DefaultCQHeaderDropdownAccnt />
             </b-navbar-nav>
             <!--<AsideToggler class="d-none d-lg-block"/>-->
             <!--<AsideToggler class="d-lg-none" mobile />-->
@@ -80,7 +80,7 @@ import {
     Breadcrumb
 } from "@coreui/vue";
 import DefaultAside from "./DefaultAside";
-import DefaultHeaderDropdownAccnt from "./DefaultHeaderDropdownAccnt";
+import DefaultCQHeaderDropdownAccnt from "./DefaultCQHeaderDropdownAccnt";
 import ElementCItemGenerator from "./elementcitem.generator";
 
 export default {
@@ -93,7 +93,7 @@ export default {
         TheFooter,
         Breadcrumb,
         DefaultAside,
-        DefaultHeaderDropdownAccnt,
+        DefaultCQHeaderDropdownAccnt,
         SidebarForm,
         SidebarFooter,
         SidebarToggler,

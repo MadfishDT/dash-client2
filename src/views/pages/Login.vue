@@ -22,11 +22,11 @@
                                         </b-row>
                                     </div>
                                     <b-row>
-                                        <b-col cols="8">
-                                        <p class="text-muted mt-1">Sign In to your account</p>
+                                        <b-col cols="7">
+                                        <p class="text-muted mt-1">로그인 하세요</p>
                                         </b-col>
                                         <b-col>
-                                           <b-button variant="link" href="/#/admin" class="px-0 mb-1">Admin Login</b-button>
+                                           <b-button variant="link" href="/#/admin" class="px-0 mb-1">관리자 로그인</b-button>
                                         </b-col>
                                     </b-row>
                                     <b-input-group class="mb-3">
@@ -39,7 +39,7 @@
                                             :readonly="this.loginForm.readOnly"
                                             type="text"
                                             class="form-control"
-                                            placeholder="Username"
+                                            placeholder="이메일"
                                             autocomplete="username email"
                                             v-model="model.email"
                                         />
@@ -54,7 +54,7 @@
                                             :readonly="this.loginForm.readOnly"
                                             type="password"
                                             class="form-control"
-                                            placeholder="Password"
+                                            placeholder="암호"
                                             autocomplete="current-password"
                                             v-model="model.password"
                                         />
@@ -70,10 +70,10 @@
                                     </b-row>
                                     <b-row v-if="!isLogined">
                                         <b-col cols="6">
-                                            <b-button  href="/#/register" variant="link" class="px-0">Register</b-button>
+                                            <b-button  href="/#/register" variant="link" class="px-0">등록</b-button>
                                         </b-col>
                                         <b-col cols="6" class="text-right">
-                                            <b-button variant="link" class="px-0">Forgot password?</b-button>
+                                            <b-button variant="link" class="px-0">암호 재설정</b-button>
                                         </b-col>
                                     </b-row>
                                 </b-form>
@@ -133,13 +133,13 @@ export default {
                 this.model.password = "*********";
                 this.loginForm.readOnly = true;
                 this.loginForm.color = "secondary";
-                this.loginForm.loginAndLogoutText = "Logout";
+                this.loginForm.loginAndLogoutText = "로그아웃";
             } else {
                 this.model.email = '';
                 this.model.password = '';
                 this.loginForm.readOnly = false;
                 this.loginForm.color = "primary";
-                this.loginForm.loginAndLogoutText = "Login";
+                this.loginForm.loginAndLogoutText = "로그인";
             }
         },
         authenticate: async function() {
@@ -166,13 +166,13 @@ export default {
                     this.model.password
                 );
                 if (result.code == this.$eservice.success) {
-                    this.showAlert("Login Suceess");
+                    this.showAlert("로그인 설공");
                     this.goToWork();
                 } else {
-                    this.showAlert("Login Fail");
+                    this.showAlert("로그인 실패");
                 }
             } else {
-                this.showAlert("Email or Password is wrong");
+                this.showAlert("이메일 또는 암호가 잘못되었습니다.");
             }
         },
         showAlert(text) {
@@ -183,9 +183,9 @@ export default {
             const result = await this.loginService.logout();
             if (result.code === this.$eservice.success) {
                 this.isLogined = false;
-                this.showAlert("Logout success");
+                this.showAlert("로그아웃 성공");
             } else {
-                this.showAlert("Logout fail");
+                this.showAlert("로그아웃 실패");
             }
             this.adjustLoginFormUI();
         },

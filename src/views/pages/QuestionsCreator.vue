@@ -1,5 +1,5 @@
 <template>
-<div class="mt-4">
+<div class="pt-2">
     <div id="surveyCreatorContainer"></div>
 </div>
 </template>
@@ -9,12 +9,11 @@
 import { ServiceError } from '../../service/service.error';
 import * as SurveyCreator from "survey-creator";
 import "survey-creator/survey-creator.css";
-
-import * as SurveyKo from "survey-knockout";
 import * as widgets from "surveyjs-widgets";
 
-import "inputmask/dist/inputmask/phone-codes/phone.js";
+import * as SurveyKo from "survey-knockout";
 
+import "inputmask/dist/inputmask/phone-codes/phone.js";
 widgets.icheck(SurveyKo);
 widgets.select2(SurveyKo);
 widgets.inputmask(SurveyKo);
@@ -27,6 +26,7 @@ widgets.sortablejs(SurveyKo);
 widgets.ckeditor(SurveyKo);
 widgets.autocomplete(SurveyKo);
 widgets.bootstrapslider(SurveyKo);
+
 
 export default {
     name: "questions-creator",

@@ -1,76 +1,65 @@
 <template>
-    <div class="animated fadeIn">
-        <b-row v-for="(item, index) in paper" :key="index">
-            <b-card class="w-100">
-                <div  slot="header" class="mb-0 pb-2">
-                    <div class="mb-0 pb-0" :key="'q'-index-sindex" v-for="(qitem, sindex) in item.question">
-                        <div class="mb-0 pb-0 font-weight-bold" v-if="qitem.type == 'text'">
-                            * {{qitem.datas}}
-                        </div>
-                        <div class="d-flex justify-content-center mb-0 mt-2 pr-0 pb-2 centered" v-if="qitem.type == 'table'">
-                            <c-table class="mb-0 ml-0 pl-0 mr-0 pr-0 
-                            pb-0 col-12 col-md-8 bg-light" :table-data="qitem.datas.datas" :fields="qitem.datas.fields" :caption="qitem.datas.caption"></c-table>
-                        </div>
-                        <div class="d-flex justify-content-center mb-0 mt-2 pr-0 pb-2 centered" 
-                            v-if="qitem.type == 'chart'">
-                            <div class="chart-wrapper">
-                            <q-bar-chart :char-datas="qitem.datas"></q-bar-chart>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                 <div v-if="item.articles.type=='select'" class="input-group">
-                    <b-radio v-for="(article, aindex) in item.articles.form" :key="index + 's-e' + aindex" :name="aindex + 's-a' + index" 
-                    class="mb-3 ml-3 radio-inline" v-model="item.answer">{{article}}</b-radio>
-                </div>
-
-                 <div v-if="item.articles.type=='check'" class="input-group">
-                   <b-checkbox v-for="(article, aindex) in item.articles.form" :key="index + 's-e' + aindex" :name="aindex + 's-a' + index" 
-                    class="mb-3 ml-3 radio-inline" v-model="item.answer">{{article}}</b-checkbox>
-                </div>
-                <div v-if="item.articles.type=='input'" class="input-group">
-                    <b-input class="mb-3" v-model="item.answer"></b-input>
-                </div>
-                <span v-if="item.articles.type=='select-file'">
-                 <div class="input-group">
-                  <b-radio v-for="(article, aindex) in item.articles.form" :key="index + 's-e' + aindex" :name="aindex + 's-a' + index" 
-                    class="mb-3 ml-3 radio-inline" v-model="item.answer">{{article}}</b-radio>
-                </div>
-                <div>
-                    <b-input class="mb-3" v-model="item.answer"></b-input>
-                </div>
-                </span>
-            </b-card>
-        </b-row>
-    </div>
+<div >
+    <div id="surveyContainer"></div>
+</div>
 </template>
 
 <script>
 import { Callout } from "@coreui/vue";
-import cTable from './base/Table';
-import QBarChart from './charts/QBarChart'
-import sample from "../service/sample.questions";
+import { ServiceError } from '../service/service.error';
+
+import * as widgets from "surveyjs-widgets";
+import * as Survey from "survey-knockout";
+
+import "inputmask/dist/inputmask/phone-codes/phone.js";
+widgets.icheck(Survey);
+widgets.select2(Survey);
+widgets.inputmask(Survey);
+widgets.jquerybarrating(Survey);
+widgets.jqueryuidatepicker(Survey);
+widgets.nouislider(Survey);
+widgets.select2tagbox(Survey);
+widgets.signaturepad(Survey);
+widgets.sortablejs(Survey);
+widgets.ckeditor(Survey);
+widgets.autocomplete(Survey);
+widgets.bootstrapslider(Survey);
+
+Survey
+    .StylesManager
+    .applyTheme("bootstrap");
+
+var myCss = {
+    matrix: {
+        root: "table table-striped"
+    },
+    navigationButton: "button btn-lg"
+};
+
+
+/*Survey.defaultBootstrapMaterialCss.navigationButton = "btn btn-green";
+Survey.defaultBootstrapMaterialCss.rating.item = "btn btn-default my-rating";
+Survey.StylesManager.applyTheme("bootstrapmaterial");
+import sample from "../service/sample.questions";*/
 export default {
     name: "questionsboard",
     components: {
         Callout,
-        cTable,
-        QBarChart
-    },
-   
-    mounted: function () {
- 
-     
     },
     created: function() {
         this.contentsService.categoryChangeSubject.subscribe((cid) => {
                 console.log('this is sp')
-                this.loadQuestions(cid);
+                if(this.cid !== cid) {
+                    this.cid = cid;
+                    this.loadQuestions(cid);
+                }
         });
     },
     data: function() {
         return {
-            paper: [],
+            cid: -1,
+            survey: null,
+            modelSurvey: {},
             contentsService: this.$service.$contentsservice
         };
     },
@@ -91,18 +80,24 @@ export default {
         },
         async loadQuestions(cid) {
             console.log('loadQuestions');
-            let result = await this.contentsService.getQuestions(cid);
-            if(result.code === this.$eservice.success) {
-                console.log(`sucess load questin fail ${result}`); 
-                const questions = result.data.map( (item) => {
-                    return JSON.parse(item.data);
-                })
-                this.paper = questions;    
-            } else {
-                if(result.code === this.$eservice.authError) {
-                    this.errorAlert('Not Logined, Please Check your account', '/');
+            let result = await this.contentsService.getCQuestions(cid);
+            if(result.code === ServiceError.success) {
+                console.log("this is");
+                if(result.code == ServiceError.success) {
+                    this.survey = new Survey.Model(JSON.parse(result.data.data), "surveyContainer");
                 } else {
-                    this.errorAlert('Unknown Error')
+                    this.survey = new Survey.Model(null, "surveyContainer");
+                    this.survey.css = myCss;
+                }
+                
+            } else {
+                if(result.code === ServiceError.authError) {
+                    this.errorAlert('로그인 후 사용해 주세요', '/');
+                } else {
+                    this.errorAlert('질문지를 찾을 수 없습니다.');
+                    this.survey = new Survey.Model(null, "surveyContainer");
+                    this.survey.css = myCss;
+                
                 }
             }
         },
