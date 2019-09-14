@@ -8,7 +8,7 @@
              <b-dropdown-header tag="div" class="text-center">
                 <strong>설문지</strong>
             </b-dropdown-header>
-            <b-dropdown-item @click="logout">
+            <b-dropdown-item @click="goquestions">
                 <i class="icon-book-open icons" /> 설문화면으로 가기
             </b-dropdown-item>
             <b-dropdown-header tag="div" class="text-center">
@@ -53,6 +53,9 @@ export default {
                await this.showAlert("로그 아웃 실패");
             }
             this.adjustLoginFormUI();
+        },
+        goquestions: function() {
+            this.$router.push("/qboards/questions");
         },
     }
 };

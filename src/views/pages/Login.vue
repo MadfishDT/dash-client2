@@ -26,7 +26,7 @@
                                         <p class="text-muted mt-1">로그인 하세요</p>
                                         </b-col>
                                         <b-col>
-                                           <b-button variant="link" href="/#/admin" class="px-0 mb-1">관리자 로그인</b-button>
+                                           <b-button variant="link" href="/#/admin" class="px-0 mb-1 ml-4">관리자 로그인</b-button>
                                         </b-col>
                                     </b-row>
                                     <b-input-group class="mb-3">
@@ -166,7 +166,7 @@ export default {
                     this.model.password
                 );
                 if (result.code == this.$eservice.success) {
-                    this.showAlert("로그인 설공");
+                    this.showAlert("로그인 성공");
                     this.goToWork();
                 } else {
                     this.showAlert("로그인 실패");

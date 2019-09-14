@@ -32,7 +32,7 @@
                                         <p class="text-muted mt-1">로그인 하세요</p>
                                         </b-col>
                                         <b-col>
-                                           <b-button variant="link" href="/#/login" class="px-0 mb-1">일반 로그인</b-button>
+                                           <b-button variant="link" href="/#/login" class="px-0 mb-1 ml-2">일반 로그인</b-button>
                                         </b-col>
                                     </b-row>
                                     <b-input-group class="mb-3">
