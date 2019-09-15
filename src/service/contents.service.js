@@ -59,6 +59,7 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+
     async getQuestions(id) {
         let url = `${this.config.host}/questions?id=${id}`;
         try {
@@ -76,6 +77,7 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+
     async getCQuestions(cid) {
         let url = `${this.config.host}/cquestions?id=${cid}`;
         try {
@@ -93,6 +95,7 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+
     async addCQuestions(categoriid, data) {
         let url = `${this.config.host}/wcqustions`;
         try {
@@ -110,10 +113,11 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-    async addAnswers(categoriid, data) {
+
+    async addAnswers(answers) {
         let url = `${this.config.host}/answers`;
         try {
-            let result = await this.requestService.requestPost(url, JSON.stringify({cid: categoriid, answers: data}),
+            let result = await this.requestService.requestPost(url, JSON.stringify(answers),
             [{ kind: 'Content-Type', value: 'application/json' }]);
             if (result.result) {
                 return this.makeErrorObject(ServiceError.success);
@@ -124,6 +128,24 @@ export class ContentsService {
                 return this.makeErrorObject(ServiceError.fail);
             }
         } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
+
+    async getAnswers(cid) {
+        let url = `${this.config.host}/answers?cid=${cid}`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success,result.data);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }

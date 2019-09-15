@@ -31,11 +31,14 @@ Survey
 
 var myCss = {
     matrix: {
-        root: "table table-striped"
-    },
-    navigationButton: "button btn-lg"
+        root: "table table-striped card"
+    }
 };
-
+var mycustomSurveyStrings = {
+            completeText: '완료'
+};
+Survey.surveyLocalization
+    .locales["my"] = mycustomSurveyStrings;
 
 /*Survey.defaultBootstrapMaterialCss.navigationButton = "btn btn-green";
 Survey.defaultBootstrapMaterialCss.rating.item = "btn btn-default my-rating";
@@ -47,11 +50,11 @@ export default {
         Callout,
     },
     created: function() {
+
         this.contentsService.categoryChangeSubject.subscribe((cid) => {
-                console.log('this is sp')
                 if(this.cid !== cid) {
                     this.cid = cid;
-                    this.loadQuestions(cid);
+                    this.loadValidAnswersQuestions(cid);
                 }
         });
     },
@@ -65,9 +68,8 @@ export default {
     },
     methods: {
         clickItems: function() {
-           console.log('click items1');
         },
-        errorAlert(msg, path) {
+        showAlert(msg, path) {
             this.$bvModal.msgBoxOk(msg)
             .then(value => {
                 if(path) {
@@ -78,26 +80,82 @@ export default {
                 this.$router.push('/page/500');
             });
         },
+        async registerAnswer(answers) {
+            const result = await this.contentsService.addAnswers(answers);
+            if(result.code == ServiceError.success) {
+                this.showAlert('등록 되었습니다');
+            } else {
+                 this.showAlert('등록 실패');
+            }
+        },
+        async loadValidAnswersQuestions(cid) {
+            let qresult = await this.contentsService.getAnswers(cid);
+             if(qresult.code === ServiceError.success) {
+                 this.initSurvey(JSON.parse(qresult.data.questions), cid,
+                  qresult.data.question_id, JSON.parse(qresult.data.answers));
+             } else {
+                 this.loadQuestions(cid);
+             }
+        },
+        initSurvey(questions, cid, qid , oldAnswers) {
+            this.survey = new Survey.Model(questions, "surveyContainer");
+
+                this.survey.completedHtml = `<span>등록중 입니다. 잠시만 기다려 주세요</span>`;
+                this.survey.css = myCss;
+                this.survey.locale = 'ko';
+                 if(oldAnswers) {
+                    this.survey.data = oldAnswers
+                };
+                this.survey
+                .onComplete
+                .add( async (answers) => {
+                    const answersData = JSON.stringify(answers.data);
+                    let answerResult = {
+                        answers: answers.data,
+                        cid: cid,
+                        qid: qid
+                    }
+                    await this.registerAnswer(answerResult);
+                    answers.clear();
+                    answers.data = JSON.parse(answersData);
+                    answers.render();
+                });
+        },
         async loadQuestions(cid) {
-            console.log('loadQuestions');
-            let result = await this.contentsService.getCQuestions(cid);
-            if(result.code === ServiceError.success) {
-                console.log("this is");
-                if(result.code == ServiceError.success) {
-                    this.survey = new Survey.Model(JSON.parse(result.data.data), "surveyContainer");
+            let qresult = await this.contentsService.getCQuestions(cid);
+            if(qresult.code === ServiceError.success) {
+                if(qresult.code == ServiceError.success) {
+                    this.initSurvey(JSON.parse(qresult.data.data), cid, qresult.data.id );
+                 /*   this.survey = new Survey.Model(JSON.parse(qresult.data.data), "surveyContainer");
+                    this.survey.completedHtml = `<span>등록중 입니다. 잠시만 기다려 주세요</span>`;
+                    this.survey.css = myCss;
+                    this.survey.locale = 'ko';
+                    this.survey
+                    .onComplete
+                    .add( async (answers) => {
+                        const answersData = JSON.stringify(answers.data);
+                        let answerResult = {
+                            answers: answers.data,
+                            cid: this.cid,
+                            qid: qresult.data.id
+                        }
+                        await this.registerAnswer(answerResult);
+                        answers.clear();
+                        answers.data = JSON.parse(answersData);
+                        answers.render();
+                    });*/
                 } else {
                     this.survey = new Survey.Model(null, "surveyContainer");
                     this.survey.css = myCss;
+                    this.survey.locale = 'ko';
                 }
-                
             } else {
                 if(result.code === ServiceError.authError) {
-                    this.errorAlert('로그인 후 사용해 주세요', '/');
+                    this.showAlert('로그인 후 사용해 주세요', '/');
                 } else {
-                    this.errorAlert('질문지를 찾을 수 없습니다.');
+                    this.showAlert('질문지를 찾을 수 없습니다.');
                     this.survey = new Survey.Model(null, "surveyContainer");
                     this.survey.css = myCss;
-                
                 }
             }
         },

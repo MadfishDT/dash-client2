@@ -179,13 +179,13 @@ export default {
                     this.model.code,
                 );
                 if (result.code == this.$eservice.success) {
-                    this.showAlert("Login Suceess");
+                    this.showAlert('로그인 성공');
                     this.goToWork();
                 } else {
-                    this.showAlert("Login Fail");
+                    this.showAlert('로그인 실패');
                 }
             } else {
-                this.showAlert("Email or Password is wrong");
+                this.showAlert('이메일 혹은 암호가 잘못 되었습니다.');
             }
         },
         showAlert(text) {
