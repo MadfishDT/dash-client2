@@ -104,7 +104,6 @@ export default {
     },
     data() {
         return {
-            emptyCid: -1,
             screenMode: {
                 creator: 0,
                 atable: 1,
@@ -126,6 +125,11 @@ export default {
         };
     },
     created() {
+        if(this.$route.path.includes('cadminboard/tables')) {
+            this.currentMode = this.screenMode.atable;
+        } else if(this.$route.path.includes('cqboards/cquestions')) {
+            this.currentMode = this.screenMode.creator;
+        }
         const user = this.$service.$loginservice.getUser();
         if (user) {
             console.log(`user direct set url is: ${JSON.stringify(user)}`);
@@ -138,22 +142,6 @@ export default {
         this.loadCategories();
     },
     updated() {
-        let currentModeTemp = this.screenMode.atable;
-        
-        if(this.$route.path.includes('cadminboard/tables')) {
-            console.log('mode table');
-            currentModeTemp = this.screenMode.atable;
-        } else if(this.$route.path.includes('cqboards/cquestions')) {
-            currentModeTemp = this.screenMode.creator;
-            console.log('mode creator');
-        }
-
-        if(currentModeTemp!=this.currentMode) {
-            this.currentMode = currentModeTemp;
-            this.loadCategories();
-            this.cid = this.emptyCid;
-        }
-        
         if (this.$route.query && this.$route.query.cid) {
             let cid = parseInt(this.$route.query.cid);
             console.log(`page router update cid is ${this.cid}-${cid}`);
@@ -170,12 +158,12 @@ export default {
                 this.questionsTitle = ElementCItemGenerator.
                 genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
                 this.contentsService.categoryChangeSubject.next(cid);
-                console.log('thisthishi fwinefinwf');
             }
         }
     },
     mounted: function() {
-        console.log('mounted');
+      
+        
     },
     methods: {
         clickItems: function() {

@@ -42,6 +42,23 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+     async getUserAnswers(cid) {
+        let url = `${this.config.host}/uanswers?cid=${cid}`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success, result.data)
+            } else {
+                if(result.code == 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async getCategories() {
         let url = `${this.config.host}/categories`;
         try {
@@ -148,6 +165,10 @@ export class ContentsService {
         } catch (e) {
             return this.makeErrorObject(ServiceError.unknown);
         }
+    }
+
+    currentMode() {
+        
     }
 }
 

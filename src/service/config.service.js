@@ -14,14 +14,10 @@ export class ConfigService {
         instance = this;
     }
 
-    get host() {
-        
-       
+    get host() {    
         if(process.env.NODE_ENV === 'development') {
-            console.log('dev-mode');
             return `http://localhost:9090`;
         } else {
-            console.log('prod-mode');
             return `http://qesg-dev.ddns.net:9090`;
         }
     }

@@ -51,15 +51,21 @@ export default {
     },
     created: function() {
 
-        this.contentsService.categoryChangeSubject.subscribe((cid) => {
+        this.contentSubscription = this.contentsService.categoryChangeSubject.subscribe((cid) => {
                 if(this.cid !== cid) {
                     this.cid = cid;
                     this.loadValidAnswersQuestions(cid);
                 }
         });
     },
+    beforeDestroy: function() {
+        if(this.contentSubscription) {
+            this.contentSubscription.unsubscribe();
+        }
+    },
     data: function() {
         return {
+            contentSubscription: null,
             cid: -1,
             survey: null,
             modelSurvey: {},

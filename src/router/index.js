@@ -6,11 +6,12 @@ import Router from 'vue-router'
 const DefaultContainer = () => import('@/containers/DefaultContainer')
 const QDefaultContainer = () => import('@/containers/QDefaultContainer')
 const QCDefaultContainer = () => import('@/containers/QCDefaultContainer')
-
+const QADefaultContainer = () => import('@/containers/QADefaultContainer');
 // Views
 const Dashboard = () => import('@/views/Dashboard')
 const Questionsboard = () => import('@/views/Questionsboard')
 
+const AnswerTables = () => import('@/views/pages/AnswerTables')
 
 const Colors = () => import('@/views/theme/Colors')
 const Typography = () => import('@/views/theme/Typography')
@@ -93,13 +94,10 @@ widgets.bootstrapslider(SurveyVue);
 Vue.use(Router)
 
 const requireAuth = () => async (from, to, next) => {
-    console.log("check logined");
     let result = await Vue.prototype.$service.$loginservice.getAuthenticated();
     if(result.code != ServiceError.success) {
-    console.log("check not loadined");
       return next('/login');
     } else {
-        console.log("check not loaded");
       return next();
     }
 }
@@ -186,6 +184,21 @@ export default new Router({
                     path: 'cquestions',
                     name: 'cQuestions',
                     component: QuestionsCreator,
+                    beforeEnter: requireAuth(),
+                }
+            ]
+        },
+         {
+            path: '/cadminboard',
+            redirect: '/cadminboard/tables',
+            name: 'CAdminTables',
+            component: QCDefaultContainer,
+            beforeEnter: requireAuth(),
+            children: [
+                {
+                    path: 'tables',
+                    name: 'AnswerTables',
+                    component: AnswerTables,
                     beforeEnter: requireAuth(),
                 }
             ]

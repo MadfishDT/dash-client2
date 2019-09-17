@@ -33,13 +33,19 @@ export default {
     data() {
         return {
             contentsService: this.$service.$contentsservice,
+            contentSubscription: null,
             cid: -1
         };
     },
     created: function() {
-        this.contentsService.categoryChangeSubject.subscribe(cid => {
-            this.loadCQuestions(cid);
+        this.contentSubscription = this.contentsService.categoryChangeSubject.subscribe(cid => {
+                this.loadCQuestions(cid);
         });
+    },
+    beforeDestroy: function() {
+        if(this.contentSubscription) {
+            this.contentSubscription.unsubscribe();
+        }
     },
     mounted() {
         let options = { showEmbededSurveyTab: false, showJSONEditorTab: false };
@@ -65,9 +71,7 @@ export default {
             options
         );
         this.surveyCreator.saveSurveyFunc = async function() {
-            console.log(JSON.stringify(this.text));
             if(this.text && selfThis.cid != -1) {
-                console.log('addCQuestions');
                 let result = await selfThis.contentsService.addCQuestions(selfThis.cid, JSON.parse(this.text));
                 if(result.code == ServiceError.success) {
                     await selfThis.showAlert("저장 성공");
@@ -80,18 +84,14 @@ export default {
     methods: {
          async loadCQuestions(cid) {
             console.log('loadQuestions');
-            
             if(this.cid != cid) {
                 this.cid = cid;
                 let result = await this.contentsService.getCQuestions(cid);
-
                 if(result.code == ServiceError.success) {
-                    console.log(`${JSON.stringify(result.data)}`);
                     this.surveyCreator.text = result.data.data;
                 } else {
                     this.surveyCreator.text = '';
                 }
-                
             }
         },
         async saveCQuestions(cid) {

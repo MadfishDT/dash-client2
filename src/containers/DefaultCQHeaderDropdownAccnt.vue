@@ -9,7 +9,13 @@
                 <strong>설문지</strong>
             </b-dropdown-header>
             <b-dropdown-item @click="goquestions">
-                <i class="icon-book-open icons" /> 설문화면으로 가기
+                <i class="icon-book-open icons" /> 설문화면
+            </b-dropdown-item>
+            <b-dropdown-item @click="goanswers">
+                <i class="icon-book-open icons" /> 답변지화면
+            </b-dropdown-item>
+            <b-dropdown-item @click="gocquestions">
+                <i class="icon-book-open icons" /> 설문지생성
             </b-dropdown-item>
             <b-dropdown-header tag="div" class="text-center">
                 <strong>계정</strong>
@@ -54,9 +60,15 @@ export default {
             }
             this.adjustLoginFormUI();
         },
-        goquestions: function() {
-            this.$router.push("/qboards/questions");
+        gocquestions: function() {
+            this.$router.push('/cqboards/cquestions');
         },
+        goquestions: function() {
+            this.$router.push('/qboards/questions');
+        },
+        goanswers: function() {
+            this.$router.push('/cadminboard');
+        }
     }
 };
 </script>
