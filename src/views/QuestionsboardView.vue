@@ -88,6 +88,8 @@ export default {
                 if(aresult.code === ServiceError.success) {
                     this.initSurvey(JSON.parse(qresult.data.data), JSON.parse(aresult.data.answers));
                 }
+            } else if(result.code === ServiceError.authError) {
+                this.showAlert('로그인 후 사용해 주세요', '/');
             }
         },
         

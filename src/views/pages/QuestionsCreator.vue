@@ -89,7 +89,10 @@ export default {
                 let result = await this.contentsService.getCQuestions(cid);
                 if(result.code == ServiceError.success) {
                     this.surveyCreator.text = result.data.data;
-                } else {
+                } else if(result.code === ServiceError.authError) {
+                    this.showAlert('로그인 후 사용해 주세요', '/');
+                } 
+                else {
                     this.surveyCreator.text = '';
                 }
             }
@@ -97,8 +100,16 @@ export default {
         async saveCQuestions(cid) {
             console.log('saveCQuestions');
         },
-        showAlert: async function(msg) {
-             return this.$bvModal.msgBoxOk(msg);
+        showAlert(msg, path) {
+            this.$bvModal.msgBoxOk(msg)
+            .then(value => {
+                if(path) {
+                    this.$router.push(path);
+                }
+            })
+            .catch(err => {
+                this.$router.push('/page/500');
+            });
         },
     }
 };

@@ -118,6 +118,7 @@ export default {
                 creator: 0,
                 atable: 1,
                 statistics: 2,
+                aview: 3
             },
             nav: nav.items,
             user: {
@@ -138,7 +139,7 @@ export default {
             rawCategoriesDatas: null,
             contentsService: this.$service.$contentsservice,
             loginService: this.$service.$loginservice,
-            currentMode: '',
+            currentMode: -1,
         };
     },
     created() {
@@ -163,6 +164,17 @@ export default {
         }
     },
     methods: {
+        showAlert(msg, path) {
+            this.$bvModal.msgBoxOk(msg)
+            .then(value => {
+                if(path) {
+                    this.$router.push(path);
+                }
+            })
+            .catch(err => {
+                this.$router.push('/page/500');
+            });
+        },
         async loadDatas() {
             const oldMode = this.currentMode;
             if(this.$route.path.includes('cadminboard/tables')) {
