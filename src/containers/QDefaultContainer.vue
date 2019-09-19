@@ -34,7 +34,7 @@
                 </div>
                 <div class="dropdown-divider mt-0" style="border-color:gray;" />
                 <b-tooltip target="img_profile" :title="this.user.fullname"></b-tooltip>
-                <SidebarNav class="ml-0 pl-0" :navItems="this.categories.items" v-on:click="clickItems()"></SidebarNav>
+                <SidebarNav class="ml-0 pl-0" :navItems="this.categories.items" v-on:click="clickItems"></SidebarNav>
                 <SidebarFooter />
                 <SidebarMinimizer />
             </AppSidebar>
@@ -130,30 +130,36 @@ export default {
             console.log(`user subscribe url is: ${JSON.stringify(user)}`);
             this.setUserInfo(user);
         });
-        this.loadCategories();
+        
     },
     updated() {
-        if (this.$route.query && this.$route.query.cid) {
-            let cid = parseInt(this.$route.query.cid);
-            console.log(`page router update cid is ${this.cid}-${cid}`);
-            if (this.cid !== cid) {
-                this.cid = cid;
-                this.contentsService.categoryChangeSubject.next(cid);
-                this.questionsTitle = ElementItemGenerator.
-                genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
-            } 
-        }else if(this.cid == -1) {
-            let cid = ElementItemGenerator.getFirstValidCategoryFromItems(this.rawCategoriesDatas);
-            if(cid && cid != -1) {
-                this.cid = cid;
-                this.questionsTitle = ElementItemGenerator.
-                genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
-                this.contentsService.categoryChangeSubject.next(cid);
-            }
-        }
+    
     },
-    mounted: function() {},
+    mounted: async function() {
+        await this.loadCategories();
+        this.loadDatas();
+    },
     methods: {
+        loadDatas() {
+            if (this.$route.query && this.$route.query.cid) {
+                let cid = parseInt(this.$route.query.cid);
+                console.log(`page router update cid is ${this.cid}-${cid}`);
+                if (this.cid !== cid) {
+                    this.cid = cid;
+                    this.contentsService.categoryChangeSubject.next(cid);
+                    this.questionsTitle = ElementItemGenerator.
+                    genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
+                } 
+                } else if(this.cid == -1) {
+                    let cid = ElementItemGenerator.getFirstValidCategoryFromItems(this.rawCategoriesDatas);
+                    if(cid && cid != -1) {
+                        this.cid = cid;
+                        this.questionsTitle = ElementItemGenerator.
+                        genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
+                        this.contentsService.categoryChangeSubject.next(cid);
+                    }
+                }
+        },
         clickItems: function() {
             console.log("click items1");
         },
@@ -180,8 +186,16 @@ export default {
             }
         }
     },
+    watch: {
+            '$route.query.cid'() {
+               this.loadDatas();
+            }
+    },
     computed: {
         name() {
+            console.log("fweefwefwfe");
+            console.log(`${this.$route.query}`);
+            
             return this.$route.name;
         },
     }

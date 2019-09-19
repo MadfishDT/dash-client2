@@ -49,6 +49,8 @@ export default {
     methods: {
         clickedRow(record, index) {
             console.log(record);
+            const aitem = this.itemsArray[index];
+            this.$router.push(`/cadminboard/aview?cid=${this.cid}&uid=${aitem.userid}&aid=${aitem.id}`);
         },
         toDateString(date) {
             const yyyy = date.getFullYear();
@@ -72,7 +74,8 @@ export default {
                             username: userAnswers.user_name,
                             userid: userAnswers.user_id,
                             email: userAnswers.email,
-                            registered: this.toDateString(date)
+                            registered: this.toDateString(date),
+                            id: userAnswers.id
                         });
                     });
                 };

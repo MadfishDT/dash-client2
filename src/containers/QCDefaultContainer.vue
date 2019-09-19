@@ -33,8 +33,16 @@
                     </div>
                 </div>
                 <div class="dropdown-divider mt-0 mb-0" style="border-color:gray;" />
+                <main v-if="!this.isSidebar">
+                <div class="brand-card-body bg-info mb-0 pb-0">
+                    <div>
+                        <div class="text-light small font-weight-bold">답변자:</div>
+                        <div class="text-light font-weight-bold">{{this.auser.fullname}}</div>
+                    </div>
+                </div>
+                </main>    
                 <b-tooltip target="img_profile" :title="this.user.fullname"></b-tooltip>
-                <SidebarNav class="ml-0 pl-0" :navItems="this.categories.items" v-on:click="clickItems()"></SidebarNav>
+                <SidebarNav v-if="this.isSidebar" class="ml-0 pl-0" :navItems="this.categories.items"></SidebarNav>
                 <SidebarFooter />
                 <SidebarMinimizer />
             </AppSidebar>
@@ -105,6 +113,7 @@ export default {
     data() {
         return {
             emptyCid: -1,
+            isSidebar: true,
             screenMode: {
                 creator: 0,
                 atable: 1,
@@ -117,69 +126,98 @@ export default {
                 imageUrl: "empty",
                 fullname: "empty"
             },
+            auser: {
+                name: "empty",
+                company: "empty",
+                imageUrl: "empty",
+                fullname: "empty"
+            },
             questionsTitle: '',
             categories: [],
             cid: -1,
             rawCategoriesDatas: null,
             contentsService: this.$service.$contentsservice,
-            currentMode: 0,
+            loginService: this.$service.$loginservice,
+            currentMode: '',
         };
     },
     created() {
         const user = this.$service.$loginservice.getUser();
         if (user) {
-            console.log(`user direct set url is: ${JSON.stringify(user)}`);
             this.setUserInfo(user);
         }
         this.$service.$loginservice.userChangeSubject.subscribe(user => {
-            console.log(`user subscribe url is: ${JSON.stringify(user)}`);
             this.setUserInfo(user);
         });
         this.loadCategories();
     },
     updated() {
-        let currentModeTemp = this.screenMode.atable;
-        
-        if(this.$route.path.includes('cadminboard/tables')) {
-            console.log('mode table');
-            currentModeTemp = this.screenMode.atable;
-        } else if(this.$route.path.includes('cqboards/cquestions')) {
-            currentModeTemp = this.screenMode.creator;
-            console.log('mode creator');
-        }
-
-        if(currentModeTemp!=this.currentMode) {
-            this.currentMode = currentModeTemp;
-            this.loadCategories();
-            this.cid = this.emptyCid;
-        }
-        
-        if (this.$route.query && this.$route.query.cid) {
-            let cid = parseInt(this.$route.query.cid);
-            console.log(`page router update cid is ${this.cid}-${cid}`);
-            if (this.cid !== cid) {
-                this.cid = cid;
-                this.contentsService.categoryChangeSubject.next(cid);
-                this.questionsTitle = ElementCItemGenerator.
-                genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
-            } 
-        }else if(this.cid == -1) { 
-            let cid = ElementCItemGenerator.getFirstValidCategoryFromItems(this.rawCategoriesDatas);
-            if(cid && cid != -1) {
-                this.cid = cid;
-                this.questionsTitle = ElementCItemGenerator.
-                genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
-                this.contentsService.categoryChangeSubject.next(cid);
-                console.log('thisthishi fwinefinwf');
-            }
-        }
+      
     },
     mounted: function() {
-        console.log('mounted');
+        this.loadDatas();
+    },
+    watch: {
+        '$route.query'() {
+            this.loadDatas();
+        }
     },
     methods: {
-        clickItems: function() {
-            console.log("click items1");
+        async loadDatas() {
+            const oldMode = this.currentMode;
+            if(this.$route.path.includes('cadminboard/tables')) {
+                console.log('mode table');
+                this.currentMode = this.screenMode.atable;
+                this.isSidebar =  true;
+            } else if(this.$route.path.includes('cqboards/cquestions')) {
+                this.currentMode = this.screenMode.creator;
+                console.log('mode creator');
+                this.isSidebar =  true;
+            } else if(this.$route.path.includes('cadminboard/aview')) {
+                this.currentMode = this.screenMode.aview;
+                this.isSidebar =  false;
+                console.log('mode aview');
+            }
+            let isViewChanged = false;
+            if(oldMode != this.currentMode) {
+                await this.loadCategories();
+                isViewChanged = true;
+            }
+            
+            if(this.currentMode !== this.screenMode.aview) {
+                this.isSidebar = true;
+                
+                if (this.$route.query && this.$route.query.cid) {
+                        const cid = Number(this.$route.query.cid);
+                        if ((this.cid !== cid) || isViewChanged == true) {
+                            this.cid = cid;
+                            this.contentsService.categoryChangeSubject.next(cid);
+                            this.questionsTitle = ElementCItemGenerator.
+                            genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
+                        } 
+                } else { 
+                        let cid = ElementCItemGenerator.getFirstValidCategoryFromItems(this.rawCategoriesDatas);
+                        this.cid = cid;
+                        this.questionsTitle = ElementCItemGenerator.
+                        genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
+                        this.contentsService.categoryChangeSubject.next(cid);
+                }
+            } else {
+                this.isSidebar = false;
+                this.loadUserAnswers();
+            }
+        },
+        async loadUserAnswers() {
+            if(this.$route.query && this.$route.query.cid && this.$route.query.aid && this.$route.query.uid) {
+                const userInfo = await this.loginService.getUserProfileById(this.$route.query.uid);
+                this.setAUserInfo(userInfo.data);
+                this.contentsService.userAnswerSelectedSubject.next({
+                    cid: this.$route.query.cid,
+                    aid : this.$route.query.aid}
+                );
+                 this.questionsTitle = ElementCItemGenerator.
+                        genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, Number(this.$route.query.cid));
+            }
         },
         async loadCategories() {
             this.result = await this.contentsService.getCategories();
@@ -190,7 +228,19 @@ export default {
                 } else if(this.currentMode == this.screenMode.creator) {
                     this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(this.result.data);
                 }
-                
+            }
+        },
+        setAUserInfo(user) {
+            this.auser.fullname = user.user_name;
+            let editedName = `${user.user_name}`;
+            if (user.user_name.length > 7) {
+                editedName = user.user_name.slice(0, 6) + "..";
+            }
+            this.auser.name = editedName;
+            this.auser.company = user.company_name;
+            let imageUrl = this.$service.$loginservice.getImageUrl(user.photo);
+            if (imageUrl) {
+                this.auser.imageUrl = imageUrl;
             }
         },
         setUserInfo(user) {
@@ -201,9 +251,7 @@ export default {
             }
             this.user.name = editedName;
             this.user.company = user.company_name;
-            console.log(`user.photo url is: ${user.photo}`);
             let imageUrl = this.$service.$loginservice.getImageUrl(user.photo);
-            console.log(`image url is: ${imageUrl}`);
             if (imageUrl) {
                 this.user.imageUrl = imageUrl;
             }

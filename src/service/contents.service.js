@@ -11,13 +11,16 @@ export class ContentsService {
         this._categoriesSubject = new Subject();
         this._categoryChangeSubject = new Subject();
         this._categorySelectedSubject = new Subject();
-
+        this._userAnswerSelectedSubject = new Subject();
     }
     get serviceError() {
         return ServiceError;
     }
     emitChangeCategory(category_id) {
         this._categoryChangeSubject.next(category_id);
+    }
+    get userAnswerSelectedSubject() {
+        return this._userAnswerSelectedSubject
     }
     get categoryChangeSubject() {
         return this._categoryChangeSubject;
@@ -148,7 +151,23 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-
+    async getAnswersById(aid) {
+        let url = `${this.config.host}/ucanswers?aid=${aid}`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success,result.data);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async getAnswers(cid) {
         let url = `${this.config.host}/answers?cid=${cid}`;
         try {

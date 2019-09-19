@@ -6,10 +6,11 @@ import Router from 'vue-router'
 const DefaultContainer = () => import('@/containers/DefaultContainer')
 const QDefaultContainer = () => import('@/containers/QDefaultContainer')
 const QCDefaultContainer = () => import('@/containers/QCDefaultContainer')
-const QADefaultContainer = () => import('@/containers/QADefaultContainer');
+
 // Views
 const Dashboard = () => import('@/views/Dashboard')
 const Questionsboard = () => import('@/views/Questionsboard')
+const QuestionsboardView = () => import('@/views/QuestionsboardView')
 
 const AnswerTables = () => import('@/views/pages/AnswerTables')
 
@@ -101,6 +102,7 @@ const requireAuth = () => async (from, to, next) => {
       return next();
     }
 }
+
 export default new Router({
     mode: 'hash', // https://router.vuejs.org/api/#mode
     linkActiveClass: 'open active',
@@ -188,7 +190,7 @@ export default new Router({
                 }
             ]
         },
-         {
+        {
             path: '/cadminboard',
             redirect: '/cadminboard/tables',
             name: 'CAdminTables',
@@ -199,6 +201,12 @@ export default new Router({
                     path: 'tables',
                     name: 'AnswerTables',
                     component: AnswerTables,
+                    beforeEnter: requireAuth(),
+                },
+                {
+                    path: 'aview',
+                    name: 'AnswerViwes',
+                    component: QuestionsboardView,
                     beforeEnter: requireAuth(),
                 }
             ]

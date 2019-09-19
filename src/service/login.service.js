@@ -144,7 +144,26 @@ export class LoginService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-
+    async getUserProfileById(id) {
+        let url = `${this.config.host}/profilebyid?uid=${id}`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                if(result.code == 200) {
+                    this.setUserProfile(result.data);
+                    return this.makeErrorObject(ServiceError.success, result.data);    
+                } 
+            } else {
+                if(result.code == 401){
+                    return this.makeErrorObject(ServiceError.autherror);
+                } 
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async getUserProfile() {
         let url = `${this.config.host}/profile`;
         try {

@@ -41,27 +41,25 @@ Survey.surveyLocalization
     .locales["my"] = mycustomSurveyStrings;
 
 export default {
-    name: "questionsboard",
+    name: "questionsboardview",
     components: {
         Callout,
     },
     created: function() {
 
-        this.contentSubscription = this.contentsService.categoryChangeSubject.subscribe((cid) => {
-                if(this.cid !== cid) {
-                    this.cid = cid;
-                    this.loadValidAnswersQuestions(cid);
-                }
+        this.answerSibscription = this.contentsService.userAnswerSelectedSubject.subscribe((ids) => {
+            console.log("tihstis sfijwifje");
+            this.loadValidAnswersQuestions(ids.cid,ids.aid);
         });
     },
     beforeDestroy: function() {
-        if(this.contentSubscription) {
-            this.contentSubscription.unsubscribe();
+        if(this.answerSibscription) {
+            this.answerSibscription.unsubscribe();
         }
     },
     data: function() {
         return {
-            contentSubscription: null,
+            answerSibscription: null,
             cid: -1,
             survey: null,
             modelSurvey: {},
@@ -82,46 +80,25 @@ export default {
                 this.$router.push('/page/500');
             });
         },
-        async registerAnswer(answers) {
-            const result = await this.contentsService.addAnswers(answers);
-            if(result.code == ServiceError.success) {
-                this.showAlert('등록 되었습니다');
-            } else {
-                 this.showAlert('등록 실패');
+       
+        async loadValidAnswersQuestions(cid, aid) {
+            let qresult = await this.contentsService.getCQuestions(cid);
+            if(qresult.code === ServiceError.success) {
+                let aresult = await this.contentsService.getAnswersById(aid);
+                if(aresult.code === ServiceError.success) {
+                    this.initSurvey(JSON.parse(qresult.data.data), JSON.parse(aresult.data.answers));
+                }
             }
         },
-        async loadValidAnswersQuestions(cid) {
-            let qresult = await this.contentsService.getAnswers(cid);
-             if(qresult.code === ServiceError.success) {
-                 this.initSurvey(JSON.parse(qresult.data.questions), cid,
-                  qresult.data.question_id, JSON.parse(qresult.data.answers));
-             } else {
-                 this.loadQuestions(cid);
-             }
-        },
-        initSurvey(questions, cid, qid , oldAnswers) {
+        
+        initSurvey(questions, oldAnswers) {
             this.survey = new Survey.Model(questions, "surveyContainer");
-
-                this.survey.completedHtml = `<span>등록중 입니다. 잠시만 기다려 주세요</span>`;
                 this.survey.css = myCss;
                 this.survey.locale = 'ko';
+                this.survey.mode = 'display';
                  if(oldAnswers) {
                     this.survey.data = oldAnswers
                 };
-                this.survey
-                .onComplete
-                .add( async (answers) => {
-                    const answersData = JSON.stringify(answers.data);
-                    let answerResult = {
-                        answers: answers.data,
-                        cid: cid,
-                        qid: qid
-                    }
-                    await this.registerAnswer(answerResult);
-                    answers.clear();
-                    answers.data = JSON.parse(answersData);
-                    answers.render();
-                });
         },
         async loadQuestions(cid) {
             let qresult = await this.contentsService.getCQuestions(cid);
