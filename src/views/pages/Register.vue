@@ -78,7 +78,7 @@
                                                         class="form-control"
                                                         placeholder="암호"
                                                         autocomplete="new-password"
-                                                        v-model="passoword"
+                                                        v-model="password"
                                                     />
                                                 </b-input-group>
                                             </b-col>
@@ -103,7 +103,7 @@
                                         </b-row>
                                         <b-row>
                                             <b-col>
-                                                <b-input-group class="mb-3">
+                                              <!--  <b-input-group class="mb-3">
                                                     <b-input-group-prepend>
                                                         <b-input-group-text>
                                                             <i class="fa fa-building-o"></i>
@@ -119,10 +119,9 @@
                                                         v-on:change="getCompanySelectedItem"
                                                         value="Please select"
                                                     ></b-form-select>
-                                                </b-input-group>
+                                                </b-input-group>-->
 
                                                 <b-input-group
-                                                    v-if="selectedCompany==companyKind.manually"
                                                     class="mb-3"
                                                 >
                                                     <b-input-group-prepend>
@@ -133,7 +132,7 @@
                                                     <b-form-input
                                                         type="text"
                                                         class="form-control"
-                                                        placeholder="Your company name"
+                                                        placeholder="회사 이름"
                                                         v-model="cName"
                                                     />
                                                 </b-input-group>
@@ -251,15 +250,18 @@ export default {
                     this.showAlert("암호가 일치 하지 않습니다.");
                     return;
                 }
+
+                const comName = this.selectedCompany != -1? this.selectedCompany : this.cName;
                 let userInfo = {
                     email: this.email,
                     password: this.password,
-                    user_name: this.userName,
-                    company_name: this.cName,
-                    company_code: this.cCode,
+                    name: this.userName,
+                    cname: comName,
+                    ccode: this.cCode,
                     part: this.partName
 
                 }
+                console.log(`register user info is ${userInfo}`);
                 let result = await this.contentsService.addNewUser(userInfo);
                 if(result.code === ServiceError.duplicate) {
                      this.showAlert("사용자가 존재 합니다.");
