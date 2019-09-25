@@ -189,6 +189,41 @@ export class ElementCItemGenerator {
         }
         return categories;
     }
+    static genMakeSidebarCTItems(datas) {
+
+        let categories = new Array();
+
+        if (datas) {
+            
+            datas.forEach(item => {
+                    
+                let resultItem = {
+                    name: item.name,
+                    id: item.id,
+                    isLeaf: false,
+                    dragDisabled: true,
+                    addLeafNodeDisabled: false,
+                    addTreeNodeDisabled: true
+                };
+                
+                if(item.children && item.children.length > 0) {
+                    resultItem['children'] = [];
+                    item.children.forEach( (citem) => {
+                        let childItem = {
+                            name: citem.name,
+                            id: citem.id,
+                            dragDisabled: false,
+                            isLeaf: true,
+                            addTreeNodeDisabled: true
+                        }
+                        resultItem['children'].push(childItem);
+                    });
+                }
+                categories.push(resultItem);
+            });
+        }
+        return categories;
+    }
 }
 
 export default ElementCItemGenerator;

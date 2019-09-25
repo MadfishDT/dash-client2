@@ -6,6 +6,7 @@ import Router from 'vue-router'
 const DefaultContainer = () => import('@/containers/DefaultContainer')
 const QDefaultContainer = () => import('@/containers/QDefaultContainer')
 const QCDefaultContainer = () => import('@/containers/QCDefaultContainer')
+const CategoriesboardEditor = () => import('@/views/CategoriesboardEditor')
 
 // Views
 const Dashboard = () => import('@/views/Dashboard')
@@ -207,6 +208,12 @@ export default new Router({
                     path: 'aview',
                     name: 'AnswerViwes',
                     component: QuestionsboardView,
+                    beforeEnter: requireAuth(),
+                },
+                {
+                    path: 'ceditor',
+                    name: 'Categoriesboard',
+                    component: CategoriesboardEditor,
                     beforeEnter: requireAuth(),
                 }
             ]

@@ -8,19 +8,19 @@
                             <b-form>
                                 <b-row>
                                     <b-col>
-                                    <h1>Register</h1>
+                                    <h1>등록</h1>
                                     </b-col>
                                     <b-col>
-                                    <h5 class="text-right pt-3 text-primary"><a href src="/"><u>login</u></a></h5>
+                                    <h5 class="text-right pt-3 text-primary"><a href src="/"><u>로그인 창으로</u></a></h5>
                                     </b-col>
                                 </b-row>
-                                <p class="text-muted">Create your account</p>
+                                <p class="text-muted">계정 생성</p>
                                 <b-row>
-                                    <b-col class="col-md-3">
+                                    <!--<b-col class="col-md-3 mt-0 pt-0">
                                         <b-row>
                                         <img type="file"
                                             :src="userImage"
-                                            class="mt-4 rounded img-thumbnail mb-1"
+                                            class="mt-2 rounded img-thumbnail mb-1"
                                             alt="Profile"
                                         />
                                         </b-row>
@@ -29,8 +29,8 @@
                                             <b-button class="mb-2" variant="danger" @click="$refs.profileImgFrom.click()" block>
                                             <i class="fa fa-folder fa-lg"/></b-button>
                                         </b-row>
-                                    </b-col>
-                                    <b-col class="col-md-9">
+                                    </b-col>-->
+                                    <b-col class="col-md-12">
                                         <b-row>
                                             <b-col>
                                                 <b-input-group class="mb-3">
@@ -42,7 +42,7 @@
                                                     <b-form-input
                                                         type="text"
                                                         class="form-control"
-                                                        placeholder="Username"
+                                                        placeholder="이름"
                                                         autocomplete="username"
                                                         v-model="userName"
                                                     />
@@ -58,7 +58,7 @@
                                                     <b-form-input
                                                         type="text"
                                                         class="form-control"
-                                                        placeholder="Email"
+                                                        placeholder="이메일"
                                                         autocomplete="email"
                                                         v-model="email"
                                                     />
@@ -76,7 +76,7 @@
                                                     <b-form-input
                                                         type="password"
                                                         class="form-control"
-                                                        placeholder="Password"
+                                                        placeholder="암호"
                                                         autocomplete="new-password"
                                                         v-model="passoword"
                                                     />
@@ -94,7 +94,7 @@
                                                     <b-form-input
                                                         type="password"
                                                         class="form-control"
-                                                        placeholder="Repeat Password"
+                                                        placeholder="암호 확인"
                                                         autocomplete="new-password"
                                                         v-model="rePassword"
                                                     />
@@ -134,7 +134,7 @@
                                                         type="text"
                                                         class="form-control"
                                                         placeholder="Your company name"
-                                                        v-model="company"
+                                                        v-model="cName"
                                                     />
                                                 </b-input-group>
                                             </b-col>
@@ -145,60 +145,29 @@
                                     <b-col>
                                         <b-row>
                                             <b-col>
-                                                <b-row>
-                                                <b-col class="col-10 mr-0">
                                                 <b-input-group class="mb-3">
                                                     <b-input-group-prepend>
                                                         <b-input-group-text>
-                                                            <i>Address 1</i>
+                                                            <i>부서이름</i>
                                                         </b-input-group-text>
                                                     </b-input-group-prepend>
-                                                    <b-form-input type="text" v-model="address1" class="form-control" />
-                                                </b-input-group>
-                                                </b-col>
-                                                <b-col class = "ml-0 pl-0">
-                                                    <b-button v-b-modal.modal-1 variant="primary" @click="searchAddress" block>
-                                                         <i class="fa fa-search fa-lg"/></b-button>
-                                                </b-col>
-                                                </b-row>
-                                                  <b-modal id="modal-1" @ok="handleAddressOk" title="주소 찾기">
-                                                        <vue-daum-postcode style="height:470px; overflow-y: scroll;" @complete="resultAddress = $event" />
-                                                  </b-modal>
-                                                <b-input-group class="mb-3">
-                                                    <b-input-group-prepend>
-                                                        <b-input-group-text>
-                                                            <i>Address 2</i>
-                                                        </b-input-group-text>
-                                                    </b-input-group-prepend>
-                                                    <b-form-input type="text" v-model="address2" class="form-control" />
-                                                </b-input-group>
-                                            </b-col>
-                                        </b-row>
-                                        <b-row>
-                                            <b-col>
-                                                <b-input-group class="mb-3">
-                                                    <b-input-group-prepend>
-                                                        <b-input-group-text>
-                                                            <i>City</i>
-                                                        </b-input-group-text>
-                                                    </b-input-group-prepend>
-                                                    <b-form-input type="text" v-model="city" class="form-control" />
+                                                    <b-form-input type="text" v-model="partName" class="form-control" />
                                                 </b-input-group>
                                             </b-col>
                                             <b-col>
                                                 <b-input-group class="mb-3">
                                                     <b-input-group-prepend>
                                                         <b-input-group-text>
-                                                            <i>Zip Code</i>
+                                                            <i>회사 코드</i>
                                                         </b-input-group-text>
                                                     </b-input-group-prepend>
-                                                    <b-form-input type="text" v-model="zipcode" class="form-control" />
+                                                    <b-form-input type="text" v-model="cCode" class="form-control" />
                                                 </b-input-group>
                                             </b-col>
                                         </b-row>
                                     </b-col>
                                 </b-row>
-                                <b-button variant="success" block>Create Account</b-button>
+                                <b-button @click="RegisterUserTry" variant="success" block>등록</b-button>
                             </b-form>
                         </b-card-body>
                     </b-card>
@@ -209,6 +178,10 @@
 </template>
 
 <script>
+
+
+import { ServiceError } from '../../service/service.error';
+
 export default {
     name: "Register",
     data() {
@@ -225,23 +198,20 @@ export default {
             email: '',
             password: '',
             rePassword: '',
-            company: '',
-            resultAddress: null,
-            address1: '',
-            address2: '',
-            city: '',
-            zipcode: ''
-            
+            cName: '',
+            cCode: '',
+            partName: ''
+            //email, password, user_name, company_name, company_code, part
         };
     },
     async mounted() {
         console.log("mounted register");
         let result = await this.contentsService.getCompanys();
-        let options = [{ value: -1, text: "--Please select a your company--" }];
+        let options = [{ value: -1, text: "--회사를 선택해 주세요--" }];
         result.data.forEach(item => {
             options.push({ value: item.id, text: item.name });
         });
-        options.push({ value: -2, text: "--Write Manually--" });
+        options.push({ value: -2, text: "--직접 입력--" });
         this.companyOptions = options;
     },
     methods: {
@@ -262,6 +232,45 @@ export default {
             this.address1 = this.resultAddress.address;
             this.city = this.resultAddress.sido;
             this.zipcode = this.resultAddress.zonecode;
+        },
+        showAlert(msg, path) {
+            this.$bvModal.msgBoxOk(msg)
+            .then(value => {
+                if(path) {
+                    this.$router.push(path);
+                }
+            })
+            .catch(err => {
+                this.$router.push('/page/500');
+            });
+        },
+        async RegisterUserTry() {
+         
+            if(this.userName && this.cCode && this.email) {
+                if(this.password != this.rePassword || !this.password) {
+                    this.showAlert("암호가 일치 하지 않습니다.");
+                    return;
+                }
+                let userInfo = {
+                    email: this.email,
+                    password: this.password,
+                    user_name: this.userName,
+                    company_name: this.cName,
+                    company_code: this.cCode,
+                    part: this.partName
+
+                }
+                let result = await this.contentsService.addNewUser(userInfo);
+                if(result.code === ServiceError.duplicate) {
+                     this.showAlert("사용자가 존재 합니다.");
+                } else if(result.code === ServiceError.notaccept) {
+                    this.showAlert("정보가 잘못 되었습니다.");
+                } else if(result.code === ServiceError.unknown) {
+                    this.showAlert("등록이 실패 하였습니다.");
+                }
+            } else {
+                 this.showAlert("필수 항목이 부족합니다.");
+            }
         }
     }
 };

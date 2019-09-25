@@ -133,6 +133,25 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+    async addNewUser(userData) {
+        let url = `${this.config.host}/nuser`;
+        try {
+            let result = await this.requestService.requestPost(url, JSON.stringify(userData),
+            [{ kind: 'Content-Type', value: 'application/json' }]);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                } else if(result.code === 409) {
+                    return this.makeErrorObject(ServiceError.duplicate);
+                } else if(result.code === 406)
+                return this.makeErrorObject(ServiceError.notaccept);
+            }
+        } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
 
     async addAnswers(answers) {
         let url = `${this.config.host}/answers`;
@@ -151,6 +170,25 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+
+    async addCCategories(datas, description) {
+        let url = `${this.config.host}/wccategories`;
+        try {
+            let result = await this.requestService.requestPost(url, JSON.stringify({ data: datas, desc: description}),
+            [{ kind: 'Content-Type', value: 'application/json' }]);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
+
     async getAnswersById(aid) {
         let url = `${this.config.host}/ucanswers?aid=${aid}`;
         try {
