@@ -62,6 +62,7 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+    
     async getCategories() {
         let url = `${this.config.host}/categories`;
         try {

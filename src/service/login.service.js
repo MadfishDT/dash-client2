@@ -47,7 +47,12 @@ export class LoginService {
     }
 
     getImageUrl(path) {
-        let url = `${this.config.host}/photo${path}`;
+        let url = 'img/profile.png'
+        if(path && path.length) {
+            let url = `${this.config.host}/photo${path}`;
+        } else {
+
+        }
         return url;
     }
 

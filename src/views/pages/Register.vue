@@ -264,11 +264,13 @@ export default {
                 console.log(`register user info is ${userInfo}`);
                 let result = await this.contentsService.addNewUser(userInfo);
                 if(result.code === ServiceError.duplicate) {
-                     this.showAlert("사용자가 존재 합니다.");
+                     this.showAlert('사용자가 존재 합니다.');
                 } else if(result.code === ServiceError.notaccept) {
-                    this.showAlert("정보가 잘못 되었습니다.");
+                    this.showAlert('정보가 잘못 되었습니다.');
                 } else if(result.code === ServiceError.unknown) {
-                    this.showAlert("등록이 실패 하였습니다.");
+                    this.showAlert('등록이 실패 하였습니다.');
+                } else if(result.code === ServiceError.success) {
+                    this.showAlert('등록되었습니다.','/');
                 }
             } else {
                  this.showAlert("필수 항목이 부족합니다.");
