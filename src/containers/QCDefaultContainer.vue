@@ -232,13 +232,13 @@ export default {
             }
         },
         async loadCategories() {
-            this.result = await this.contentsService.getCategories();
-            if (this.result.code === this.$eservice.success) {
-                this.rawCategoriesDatas = this.result.data;
+            const result = await this.contentsService.getCategories();
+            if (result.code === this.$eservice.success) {
+                this.rawCategoriesDatas = result.data;
                 if (this.currentMode == this.screenMode.atable) {
-                    this.categories = ElementCItemGenerator.genMakeSidebarCTablesItems(this.result.data);
+                    this.categories = ElementCItemGenerator.genMakeSidebarCTablesItems(result.data);
                 } else if(this.currentMode == this.screenMode.creator) {
-                    this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(this.result.data);
+                    this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(result.data);
                 }
             }
         },

@@ -63,6 +63,25 @@ export class ContentsService {
         }
     }
     
+    async getUIDFromServer() {
+        let url = `${this.config.host}/nguid`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success, result.data)
+            } else {
+                if(result.code == 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
+
+
     async getCategories() {
         let url = `${this.config.host}/categories`;
         try {
