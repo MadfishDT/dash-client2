@@ -1,21 +1,27 @@
 <template>
     <div class="w-100 h-100">
-        <b-row align-h="start">
-            <b-card class="w-100" header="카테고리들" border-variant="primary">
-    
-                <div slot="header">
-                    카테고리 편집
-                    <div class="card-header-actions">
-                        <button><i class="icon-plus"></i></button>
-    
+        <b-modal centered id="modal-prevent-closing" ref="modal_cate_name" title="카테고리 이름을 넣으세요" @show="resetCategoryModal" @hidden="resetCategoryModal" @ok="handleCategoryOk">
+            <form ref="form" @submit.stop.prevent="handleSubmit">
+                <b-form-group :state="nameState" label="Name" label-for="name-input" invalid-feedback="Name is required">
+                    <b-form-input id="name-input" v-model="cNewName" :state="nameState" required></b-form-input>
+                </b-form-group>
+            </form>
+        </b-modal>
+        <!-- <b-row align-h="start">
+                <b-card class="w-100" header="카테고리들" border-variant="primary">
+                    <div slot="header">
+                        카테고리 편집
+                        <div class="card-header-actions">
+                            <button><i class="icon-plus"></i></button>
+        
+                        </div>
                     </div>
-                </div>
-                <b-card-body class="text-center">
-                    <vue-tree-list @drop="ondrop" @drop-before="ondropBefore" @drop-after="ondropAfter" @click="onClick" :model="categories" default-tree-node-name="new node" default-leaf-node-name="new">
-                    </vue-tree-list>
-                </b-card-body>
-            </b-card>
-        </b-row>
+                    <b-card-body class="text-center">
+                        <vue-tree-list @drop="ondrop" @drop-before="ondropBefore" @drop-after="ondropAfter" @click="onClick" :model="categories" default-tree-node-name="new node" default-leaf-node-name="new">
+                        </vue-tree-list>
+                    </b-card-body>
+                </b-card>
+            </b-row>-->
         <b-row align-h="start">
             <b-card class="w-100" header="카테고리들" border-variant="primary">
                 <div slot="header">
@@ -38,10 +44,11 @@
                                 </b-input-group>
                             </b-col>
                             <b-col class="ml-0 pl-0">
-                                <button v-if="!citem.editable"><i  @click="plusChildCategory(citem)"  class="icon-plus"></i></button>
-                                <button v-if="!citem.editable"><i  @click="plusEditorbleCategory(citem)" class="icon-pencil"></i></button>
-                                <button v-if="citem.editable"><i  @click="plusCancelCategory(citem)" class="cui-circle-x"></i></button>
-                                <button><i  @click="plusSaveCategory"  class="fa fa-save"></i></button>
+                                <button><i  @click="plusChildCategory(citem)"  class="icon-plus"></i></button>
+                                <button><i  @click="plusEditorbleCategory(citem)" class="cui-circle-check icons"></i></button>
+                                <button><i  @click="plusCancelCategory(citem)" class="icon-close"></i></button>
+                                <button><i  @click="plusSaveCategory"  class="cui-arrow-top icons"></i></button>
+                                <button><i  @click="plusSaveCategory"  class="cui-arrow-bottom icons"></i></button>
                             </b-col>
                         </b-row>
                         <b-row v-for="(ccitem, sindex) in citem.children" :key="sindex" fluid>
@@ -56,9 +63,10 @@
                                 </b-input-group>
                             </b-col>
                             <b-col class="ml-0 pl-0">
-                                    <button v-if="!ccitem.editable"><i  @click="plusEditorbleCategory(ccitem)"  class="icon-pencil"></i></button>
-                                    <button v-if="ccitem.editable"><i  @click="plusCancelCategory(ccitem)" class="cui-circle-x"></i></button>
-                                    <button><i  @click="plusCategory"  class="fa fa-save"></i></button>
+                                <button><i  @click="plusEditorbleCategory(citem)" class="cui-circle-check icons"></i></button>
+                                <button><i  @click="plusCancelCategory(citem)" class="icon-close"></i></button>
+                                <button><i  @click="plusSaveCategory"  class="cui-arrow-top icons"></i></button>
+                                <button><i  @click="plusSaveCategory"  class="cui-arrow-bottom icons"></i></button>
                             </b-col>
                         </b-row>
                     </b-container>
@@ -113,6 +121,8 @@ export default {
     },
     data() {
         return {
+            cNewName: '',
+            selectedCData: null,
             desc: '',
             contentsService: this.$service.$contentsservice,
             rawCategoriesDatas: {},
@@ -147,11 +157,11 @@ export default {
     methods: {
         findOriginalCData(item) {
             for (let pitem of this.cOriginData) {
-                if(pitem.id === item.id ) {
+                if (pitem.id === item.id) {
                     return pitem;
                 }
-                for(let citem of pitem.children) {
-                    if(citem.id === item.id ) {
+                for (let citem of pitem.children) {
+                    if (citem.id === item.id) {
                         return citem;
                     }
                 }
@@ -159,16 +169,16 @@ export default {
             return null;
         },
 
-         removeUICData(item) {
+        removeUICData(item) {
             for (let index in this.cData) {
                 let pitem = this.cData[index];
-                if(pitem.id === item.id ) {
+                if (pitem.id === item.id) {
                     this.cData.splice(index, 1);
                     return true;
                 }
-                for(let sindex in pitem.children) {
+                for (let sindex in pitem.children) {
                     let citem = pitem.children[sindex];
-                    if( citem.id === item.id ) {
+                    if (citem.id === item.id) {
                         pitem.children.splice(sindex, 1);
                         return true;
                     }
@@ -206,54 +216,60 @@ export default {
         },
         showAlert(msg, path) {
             this.$bvModal.msgBoxOk(msg)
-            .then(value => {
-                if(path) {
-                    this.$router.push(path);
-                }
-            })
-            .catch(err => {
-                this.$router.push('/page/500');
-            });
+                .then(value => {
+                    if (path) {
+                        this.$router.push(path);
+                    }
+                })
+                .catch(err => {
+                    this.$router.push('/page/500');
+                });
         },
-       showConfirm(msg) {
+        showConfirm(msg) {
             this.boxTwo = ''
             this.$bvModal.msgBoxConfirm(msg, {
-            title: 'Please Confirm',
-            size: 'sm',
-            buttonSize: 'sm',
-            okVariant: 'danger',
-            okTitle: 'YES',
-            cancelTitle: 'NO',
-            footerClass: 'p-2',
-            hideHeaderClose: false,
-            centered: true
-            })
-            .then(value => {
-                this.boxTwo = value
-                console.log(value);
-            })
-            .catch(err => {
-                // An error occurred
-            })
+                    title: 'Please Confirm',
+                    size: 'sm',
+                    buttonSize: 'sm',
+                    okVariant: 'danger',
+                    okTitle: 'YES',
+                    cancelTitle: 'NO',
+                    footerClass: 'p-2',
+                    hideHeaderClose: false,
+                    centered: true
+                })
+                .then(value => {
+                    this.boxTwo = value
+                    console.log(value);
+                })
+                .catch(err => {
+                    // An error occurred
+                })
         },
         async plusCategory() {
             console.log('plus');
-            let result = await this.contentsService.getUIDFromServer();
-            if(result.code == ServiceError.success) {
-                this.cData.push({
-                    name: '',
-                    id: result.data,
-                    editable: true,
-                    children: {}
-                });
-            } else {
-                this.showAlert('서버 연결 에러, 생성 에러!');
-            }
+            this.selectedCData = null;
+            this.$refs.modal_cate_name.show();
+
+            /* let result = await this.contentsService.getUIDFromServer();
+             if (result.code == ServiceError.success) {
+                 this.cData.push({
+                     name: '',
+                     id: result.data,
+                     editable: true,
+                     children: {}
+                 });
+             } else {
+                 this.showAlert('서버 연결 에러, 생성 에러!');
+             }*/
         },
         async plusChildCategory(citem) {
             console.log(citem);
-            let result = await this.contentsService.getUIDFromServer();
-            if(citem.children) {
+            this.selectedCData = citem;
+            this.$refs.modal_cate_name.show();
+
+            /*let result = await this.contentsService.getUIDFromServer();
+            if (citem.children) {
                 citem.children.push({
                     name: '',
                     id: result.data,
@@ -266,23 +282,23 @@ export default {
                     id: result.data,
                     editable: true,
                 });
-            }
+            }*/
         },
         plusEditorbleCategory(citem) {
             console.log(citem);
-            if(citem) {
+            if (citem) {
                 citem.editable = true;
             }
         },
         plusCancelCategory(citem) {
             const original = this.findOriginalCData(citem);
             if (original) {
-               citem.name= original.name;
-               citem.editable= original.editable;
+                citem.name = original.name;
+                citem.editable = original.editable;
             } else {
                 this.removeUICData(citem);
             }
-            if(citem) {
+            if (citem) {
                 citem.editable = false;
             }
         },
@@ -332,9 +348,60 @@ export default {
 
             vm.newTree = _dfs(vm.data)
         },
-
         onClick(model) {
             console.log(model);
+        },
+        checkFormValidity() {
+            return this.cNewName.length > 2 && !this.cNewName.includes(' ');
+        },
+        resetCategoryModal() {
+            this.name = ''
+            this.nameState = null
+        },
+        handleCategoryOk(bvModalEvt) {
+            bvModalEvt.preventDefault()
+            this.handleSubmit()
+        },
+        async handleSubmit() {
+            // Exit when the form isn't valid
+            if (!this.checkFormValidity()) {
+                this.showAlert("카테고리 이름이 잘못되었습니다.");
+                return
+            }
+
+            let result = await this.contentsService.getUIDFromServer();
+            const cname = this.cNewName;
+                 
+            if (this.selectedCData) {
+                const citem = this.selectedCData;
+                if (citem.children) {
+                    citem.children.push({
+                        name: cname,
+                        id: result.data,
+                        editable: false,
+                    });
+                } else {
+                    citem['children'] = [];
+                    citem['children'].push({
+                        name: cname,
+                        id: result.data,
+                        editable: false,
+                    });
+                }
+            } else {
+                this.cData.push({
+                    name: cname,
+                    id: result.data,
+                    editable: false,
+                    children: {}
+                });
+            }
+
+            // Push the name to submitted names
+            // Hide the modal manually
+            this.$nextTick(() => {
+                this.$refs.modal_cate_name.hide()
+            })
         }
     }
 };
