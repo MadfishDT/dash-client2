@@ -227,7 +227,7 @@ export default {
                     aid : this.$route.query.aid}
                 );
                  this.questionsTitle = ElementCItemGenerator.
-                        genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, Number(this.$route.query.cid));
+                        genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, this.$route.query.cid);
             }
         },
         async loadCategories() {

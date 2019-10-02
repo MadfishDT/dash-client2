@@ -9,6 +9,8 @@ export class ElementItemGenerator {
                 let parentItemName = item.name;
                 if(!item.children) {
                     return item.id;
+                } else if(item.children && item.children.length <= 0){
+                    return item.id;
                 }
                 
                 if(item.children && item.children.length > 0) {
@@ -59,7 +61,7 @@ export class ElementItemGenerator {
                
                 let resultItem = {
                     name: item.name,
-                    url: `/qboards/questions?div${item.id}=q&cid=${item.id}`,
+                    url: `/qboards/questions?cid=${item.id}`,
                     icon: 'icon-doc',
                 };
                 
@@ -69,7 +71,7 @@ export class ElementItemGenerator {
                     item.children.forEach( (citem, index) => {
                         let childItem = {
                             name: citem.name,
-                            url: `/qboards/questions?div${citem.id}=q&cid=${citem.id}`,
+                            url: `/qboards/questions?cid=${citem.id}`,
                             icon: 'icon-arrow-right-circle',
                             attributes: {
                                class: 'ml-3'   

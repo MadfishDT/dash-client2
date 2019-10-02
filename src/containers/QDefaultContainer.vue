@@ -142,7 +142,7 @@ export default {
     methods: {
         loadDatas() {
             if (this.$route.query && this.$route.query.cid) {
-                let cid = parseInt(this.$route.query.cid);
+                let cid = this.$route.query.cid;
                 console.log(`page router update cid is ${this.cid}-${cid}`);
                 if (this.cid !== cid) {
                     this.cid = cid;
