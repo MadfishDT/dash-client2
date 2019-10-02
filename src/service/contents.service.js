@@ -100,6 +100,24 @@ export class ContentsService {
         }
     }
 
+    async getCCategories() {
+        let url = `${this.config.host}/ccategoriescode`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success, result.data)
+            } else {
+                if(result.code == 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
+
     async getQuestions(id) {
         let url = `${this.config.host}/questions?id=${id}`;
         try {
@@ -191,10 +209,10 @@ export class ContentsService {
         }
     }
 
-    async addCCategories(datas, description) {
+    async addCCategories(datas) {
         let url = `${this.config.host}/wccategories`;
         try {
-            let result = await this.requestService.requestPost(url, JSON.stringify({ data: datas, desc: description}),
+            let result = await this.requestService.requestPost(url, JSON.stringify(datas),
             [{ kind: 'Content-Type', value: 'application/json' }]);
             if (result.result) {
                 return this.makeErrorObject(ServiceError.success);

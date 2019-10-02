@@ -9,20 +9,18 @@
             <b-navbar-nav class="ml-auto">
                 <DefaultCQHeaderDropdownAccnt />
             </b-navbar-nav>
-            <!--<AsideToggler class="d-none d-lg-block"/>-->
-            <!--<AsideToggler class="d-lg-none" mobile />-->
         </AppHeader>
         <div class="app-body">
             <AppSidebar fixed>
-                <SidebarHeader />
-                <SidebarForm />
+                <SidebarHeader/>
+                <SidebarForm/>
                 <div class="brand-card-header bg-gray-700">
-                             <img
-                        id="img_profile"
-                        width="65"
-                        alt="No Image"
-                        class="img-avatar font-2xl mr-0 float-left"
-                        :src="this.user.imageUrl"
+                        <img
+                            id="img_profile"
+                            width="65"
+                            alt="No Image"
+                            class="img-avatar font-2xl mr-0 float-left"
+                            :src="this.user.imageUrl"
                         />
                 </div>
 
@@ -73,6 +71,7 @@
 <script>
 import nav from "@/_navqtemp";
 import { HeaderDropdown as AppHeaderDropdown } from "@coreui/vue";
+import { ServiceError } from '../service/service.error';
 import {
     Header as AppHeader,
     SidebarToggler,
@@ -200,7 +199,7 @@ export default {
                 this.isSidebar = true;
                 
                 if (this.$route.query && this.$route.query.cid) {
-                        const cid = Number(this.$route.query.cid);
+                        const cid = this.$route.query.cid;
                         if ((this.cid !== cid) || isViewChanged == true) {
                             this.cid = cid;
                             this.contentsService.categoryChangeSubject.next(cid);
@@ -232,15 +231,25 @@ export default {
             }
         },
         async loadCategories() {
-            const result = await this.contentsService.getCategories();
-            if (result.code === this.$eservice.success) {
-                this.rawCategoriesDatas = result.data;
+
+              let result = await this.contentsService.getCCategories();
+            if(result.code != ServiceError.success) {
+                console.log('faile get categories');
+            } else {
+                const cdata = JSON.parse(result.data.data);
+                this.rawCategoriesDatas = cdata;
                 if (this.currentMode == this.screenMode.atable) {
-                    this.categories = ElementCItemGenerator.genMakeSidebarCTablesItems(result.data);
+                    this.categories = ElementCItemGenerator.genMakeSidebarCTablesItems(cdata);
                 } else if(this.currentMode == this.screenMode.creator) {
-                    this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(result.data);
+                    this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(cdata);
                 }
             }
+
+           /* const result = await this.contentsService.getCategories();
+            if (result.code === this.$eservice.success) {
+                this.rawCategoriesDatas = result.data;
+                
+            }*/
         },
         setAUserInfo(user) {
             this.auser.fullname = user.user_name;

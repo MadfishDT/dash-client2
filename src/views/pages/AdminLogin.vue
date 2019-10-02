@@ -72,6 +72,7 @@
                                             </b-input-group-text>
                                         </b-input-group-prepend>
                                         <b-form-input
+                                            @keyup.enter="authenticate"
                                             :readonly="this.loginForm.readOnly"
                                             type="password"
                                             class="form-control"
@@ -79,6 +80,7 @@
                                             autocomplete="current-password"
                                             v-model="model.code"
                                         />
+                                      
                                     </b-input-group>
                                     <b-row>
                                         <b-col cols="12">

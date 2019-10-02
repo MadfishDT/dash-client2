@@ -82,7 +82,7 @@ export default {
         };
     },
     methods: {
-         async loadCQuestions(cid) {
+        async loadCQuestions(cid) {
             console.log('loadQuestions');
             if(this.cid != cid) {
                 this.cid = cid;

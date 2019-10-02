@@ -83,7 +83,7 @@ import DefaultAside from "./DefaultAside";
 import DefaultHeaderDropdownAccnt from "./DefaultHeaderDropdownAccnt";
 import ElementItemGenerator from "./elementitem.generator";
 import QCDefaultContainer from "../views/pages/QuestionsCreator";
-
+import { ServiceError } from '../service/service.error';
 export default {
     name: "QDefaultContainer",
     components: {
@@ -164,11 +164,22 @@ export default {
             console.log("click items1");
         },
         async loadCategories() {
-            this.result = await this.contentsService.getCategories();
+
+            let result = await this.contentsService.getCCategories();
+            if(result.code != ServiceError.success) {
+                console.log('faile get categories');
+            } else {
+                const cdata = JSON.parse(result.data.data);
+                this.rawCategoriesDatas = cdata;
+                this.categories = ElementItemGenerator.genMakeSidebarCategoryItems(cdata);
+            
+            }
+
+            /*this.result = await this.contentsService.getCategories();
             if (this.result.code === this.$eservice.success) {
                 this.rawCategoriesDatas = this.result.data;
                 this.categories = ElementItemGenerator.genMakeSidebarCategoryItems(this.result.data);
-            }
+            }*/
         },
         setUserInfo(user) {
             this.user.fullname = user.user_name;

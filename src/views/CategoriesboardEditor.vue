@@ -1,27 +1,20 @@
 <template>
     <div class="w-100 h-100">
-        <b-modal centered id="modal-prevent-closing" ref="modal_cate_name" title="카테고리 이름을 넣으세요" @show="resetCategoryModal" @hidden="resetCategoryModal" @ok="handleCategoryOk">
+        <b-modal centered id="modal-prevent-closing" ref="modal_cate_name" title="새로운 카테고리 이름을 넣으세요" @show="resetCategoryModal" @hidden="resetCategoryModal" @ok="handleCategoryOk">
             <form ref="form" @submit.stop.prevent="handleSubmit">
-                <b-form-group :state="nameState" label="Name" label-for="name-input" invalid-feedback="Name is required">
-                    <b-form-input id="name-input" v-model="cNewName" :state="nameState" required></b-form-input>
+                <b-form-group label="Name" label-for="name-input" invalid-feedback="Name is required">
+                    <b-form-input id="name-input" v-model="cNewName" required></b-form-input>
                 </b-form-group>
             </form>
         </b-modal>
-        <!-- <b-row align-h="start">
-                <b-card class="w-100" header="카테고리들" border-variant="primary">
-                    <div slot="header">
-                        카테고리 편집
-                        <div class="card-header-actions">
-                            <button><i class="icon-plus"></i></button>
-        
-                        </div>
-                    </div>
-                    <b-card-body class="text-center">
-                        <vue-tree-list @drop="ondrop" @drop-before="ondropBefore" @drop-after="ondropAfter" @click="onClick" :model="categories" default-tree-node-name="new node" default-leaf-node-name="new">
-                        </vue-tree-list>
-                    </b-card-body>
-                </b-card>
-            </b-row>-->
+        <b-modal centered id="modal-prevent-closing" ref="modal_cate_rename" title="카테고리 이름을 변경" @show="resetCategoryModal"
+         @hidden="resetCategoryModal" @ok="handleCategoryRenameOk">
+            <form ref="form" @submit.stop.prevent="handleRenameSubmit">
+                <b-form-group label="Name" label-for="name-input" invalid-feedback="Name is required">
+                    <b-form-input id="name-input" v-model="cNewName" required></b-form-input>
+                </b-form-group>
+            </form>
+        </b-modal>
         <b-row align-h="start">
             <b-card class="w-100" header="카테고리들" border-variant="primary">
                 <div slot="header">
@@ -31,7 +24,7 @@
                     </div>
                 </div>
                 <b-card-body class="text-center">
-                    <b-container class="m-0 p-0" v-for="(citem, index) in cData" :key="index" fluid>
+                    <b-container class="m-0 p-0" v-for="(citem) in cData" :key="citem.id" fluid>
                         <b-row>
                             <b-col cols="10" class="m-0 p-0">
                                 <b-input-group class="mb-3">
@@ -40,18 +33,18 @@
                                             <i class="icon-doc icons"></i>
                                         </b-input-group-text>
                                     </b-input-group-prepend>
-                                    <b-form-input type="text" :readonly="!citem.editable" class="form-control" placeholder="" v-model="citem.name" />
+                                    <b-form-input type="text" readonly class="form-control" placeholder="" v-model="citem.name" />
                                 </b-input-group>
                             </b-col>
                             <b-col class="ml-0 pl-0">
                                 <button><i  @click="plusChildCategory(citem)"  class="icon-plus"></i></button>
                                 <button><i  @click="plusEditorbleCategory(citem)" class="cui-circle-check icons"></i></button>
-                                <button><i  @click="plusCancelCategory(citem)" class="icon-close"></i></button>
-                                <button><i  @click="plusSaveCategory"  class="cui-arrow-top icons"></i></button>
-                                <button><i  @click="plusSaveCategory"  class="cui-arrow-bottom icons"></i></button>
+                                <button><i  @click="plusRemoveCategory(citem)" class="icon-close"></i></button>
+                                <button><i  @click="plusMoveUp(citem)"  class="cui-arrow-top icons"></i></button>
+                                <button><i  @click="plusMoveDown(citem)"  class="cui-arrow-bottom icons"></i></button>
                             </b-col>
                         </b-row>
-                        <b-row v-for="(ccitem, sindex) in citem.children" :key="sindex" fluid>
+                        <b-row v-for="(ccitem) in citem.children" :key="ccitem.id" fluid>
                             <b-col cols="10" class="ml-3">
                                 <b-input-group class="mb-4">
                                     <b-input-group-prepend>
@@ -59,14 +52,14 @@
                                             <i class="icon-arrow-right-circle icons"></i>
                                         </b-input-group-text>
                                     </b-input-group-prepend>
-                                    <b-form-input :readonly="!ccitem.editable" type="text" class="form-control" placeholder="" v-model="ccitem.name" />
+                                    <b-form-input readonly type="text" class="form-control" placeholder="" v-model="ccitem.name" />
                                 </b-input-group>
                             </b-col>
                             <b-col class="ml-0 pl-0">
-                                <button><i  @click="plusEditorbleCategory(citem)" class="cui-circle-check icons"></i></button>
-                                <button><i  @click="plusCancelCategory(citem)" class="icon-close"></i></button>
-                                <button><i  @click="plusSaveCategory"  class="cui-arrow-top icons"></i></button>
-                                <button><i  @click="plusSaveCategory"  class="cui-arrow-bottom icons"></i></button>
+                                <button><i  @click="plusEditorbleCategory(ccitem)" class="cui-circle-check icons"></i></button>
+                                <button><i  @click="plusRemoveCategory(ccitem)" class="icon-close"></i></button>
+                                <button><i  @click="plusMoveUp(ccitem)"  class="cui-arrow-top icons"></i></button>
+                                <button><i  @click="plusMoveDown(ccitem)"  class="cui-arrow-bottom icons"></i></button>
                             </b-col>
                         </b-row>
                     </b-container>
@@ -76,17 +69,38 @@
         <b-row align-h="end">
             <b-col>
                 <b-row>
-                    <b-input-group class="mb-3">
-                        <b-input-group-prepend>
-                            <b-input-group-text>
-                                <i class="icon-doc"></i>
-                            </b-input-group-text>
-                        </b-input-group-prepend>
-                        <b-form-input type="text" class="form-control" placeholder="설명" v-model="desc" />
-                    </b-input-group>
-                    <b-row>
-    
-                    </b-row>
+                    <b-col>
+                        <b-row>
+                        <b-input-group class="mb-3">
+                            <b-input-group-prepend>
+                                <b-input-group-text>
+                                    <i>회사 Code</i>
+                                </b-input-group-text>
+                            </b-input-group-prepend>
+                            <b-form-input type="text" readonly class="form-control" placeholder="code" v-model="curUser.company_code" />
+                        </b-input-group>
+                        </b-row>
+                        <b-row>
+                        <b-input-group class="mb-3">
+                            <b-input-group-prepend>
+                                <b-input-group-text>
+                                    <i>카테고리 Code</i>
+                                </b-input-group-text>
+                            </b-input-group-prepend>
+                            <b-form-input type="text" readonly class="form-control" placeholder="ID" v-model="cCodeId" />
+                        </b-input-group>
+                        </b-row>
+                        <b-row>
+                        <b-input-group class="mb-3">
+                            <b-input-group-prepend>
+                                <b-input-group-text>
+                                    <i>설명</i>
+                                </b-input-group-text>
+                            </b-input-group-prepend>
+                            <b-form-input type="text" class="form-control" placeholder="설명" v-model="desc" />
+                        </b-input-group>    
+                        </b-row>
+                    </b-col>
                 </b-row>
                 <b-row>
                     <b-col cols="6">
@@ -106,6 +120,7 @@ import { Callout } from "@coreui/vue";
 import { ServiceError } from '../service/service.error';
 import { ElementCItemGenerator } from '../containers/elementcitem.generator';
 import { Tree, TreeNode, VueTreeList } from 'vue-tree-list';
+import Vue from 'vue';
 
 export default {
     name: "categoriesEditorview",
@@ -114,17 +129,20 @@ export default {
     },
     created: function() {
         this.loadCategories();
-        this.loadCategories2();
+        this.curUser = this.loginService.getUser();
     },
     beforeDestroy: function() {
 
     },
     data() {
         return {
+            cCodeId: null,
+            curUser: null,
             cNewName: '',
             selectedCData: null,
             desc: '',
             contentsService: this.$service.$contentsservice,
+            loginService: this.$service.$loginservice,
             rawCategoriesDatas: {},
             categories: {},
             newTree: {},
@@ -132,23 +150,19 @@ export default {
             cOriginData: [{
                     name: '근로조건',
                     id: 'c41b90f9-6147-4c95-9396-e8f1c56e09e6',
-                    editable: false,
                     children: [{
                             name: '근로조건1',
                             id: 'aea996ee-6a25-407f-9950-a7ab09b1d48b',
-                            editable: false,
                         },
                         {
                             name: '근로조건2',
                             id: '153b23a7-a5eb-4e29-9eda-95540ab95614',
-                            editable: false,
                         },
                     ]
                 },
                 {
                     name: '일반관리',
                     id: '7740eaec-9657-4f3c-bab6-4a79b81eb8c6',
-                    editable: false,
                     children: []
                 }
             ]
@@ -186,27 +200,45 @@ export default {
             }
             return false;
         },
-        async loadCategories2() {
+        async applyCategoriesToUi() {
             this.cData = JSON.parse(JSON.stringify(this.cOriginData));
         },
 
         async loadCategories() {
-            this.result = await this.contentsService.getCategories();
-            if (this.result.code === this.$eservice.success) {
-                this.rawCategoriesDatas = this.result.data;
-                const categoryData = ElementCItemGenerator.genMakeSidebarCTItems(this.result.data);
-                this.categories = new Tree(categoryData);
+            let result = await this.contentsService.getCCategories();
+            if(result.code != ServiceError.success) {
+                result = await this.contentsService.getUIDFromServer();
+                this.cCodeId = result.data;
+            } else {
+                this.cCodeId = result.data.code;
+                this.cOriginData = JSON.parse(result.data.data);
+                this.applyCategoriesToUi();
             }
         },
-        reset() {
-
+        async reset() {
+            const result = await this.showConfirm("리셋하시겠습니까? (저장하지 않은 내용은 모두 사라집니다)");
+            if(result) {
+                this.cData = JSON.parse(JSON.stringify(this.cOriginData));
+            }
         },
         async save() {
-            const result = await this.contentsService.addCCategories(this.categories);
-            if (result) {
-
+            console.log(this.curUser);
+            if(this.cData.length < 1) {
+                this.showAlert('카테고리가 항목이 비어 있습니다.');
+                return;
+            }
+            const saveCategoriesInfo = {
+                data: this.cData,
+                desc: this.desc,
+                code: this.cCodeId,
+            }
+            console.log(JSON.stringify(saveCategoriesInfo));
+            const result = await this.contentsService.addCCategories(saveCategoriesInfo);
+            if (result.code == ServiceError.success) {
+                this.cOriginData = JSON.parse(JSON.stringify(this.cData));
+                  this.showAlert('카테고리가 저장되었습니다.');
             } else {
-
+                console.log('카테고리가 저장 실패!');
             }
         },
         addNode: function() {
@@ -227,7 +259,7 @@ export default {
         },
         showConfirm(msg) {
             this.boxTwo = ''
-            this.$bvModal.msgBoxConfirm(msg, {
+            return this.$bvModal.msgBoxConfirm(msg, {
                     title: 'Please Confirm',
                     size: 'sm',
                     buttonSize: 'sm',
@@ -240,132 +272,139 @@ export default {
                 })
                 .then(value => {
                     this.boxTwo = value
-                    console.log(value);
+                    return value;
                 })
                 .catch(err => {
                     // An error occurred
+                    return false;
                 })
         },
         async plusCategory() {
             console.log('plus');
             this.selectedCData = null;
             this.$refs.modal_cate_name.show();
-
-            /* let result = await this.contentsService.getUIDFromServer();
-             if (result.code == ServiceError.success) {
-                 this.cData.push({
-                     name: '',
-                     id: result.data,
-                     editable: true,
-                     children: {}
-                 });
-             } else {
-                 this.showAlert('서버 연결 에러, 생성 에러!');
-             }*/
         },
         async plusChildCategory(citem) {
             console.log(citem);
             this.selectedCData = citem;
             this.$refs.modal_cate_name.show();
-
-            /*let result = await this.contentsService.getUIDFromServer();
-            if (citem.children) {
-                citem.children.push({
-                    name: '',
-                    id: result.data,
-                    editable: true,
-                });
-            } else {
-                citem['children'] = [];
-                citem['children'].push({
-                    name: '',
-                    id: result.data,
-                    editable: true,
-                });
-            }*/
         },
         plusEditorbleCategory(citem) {
+            this.cNewName = citem.name;
+           this.selectedCData = citem;
             console.log(citem);
-            if (citem) {
-                citem.editable = true;
-            }
+            this.$refs.modal_cate_rename.show();
         },
-        plusCancelCategory(citem) {
-            const original = this.findOriginalCData(citem);
-            if (original) {
-                citem.name = original.name;
-                citem.editable = original.editable;
+        async plusRemoveCategory(citem) {
+            if(citem.children && citem.children.length >= 1) {
+                const result = await this.showConfirm(`${citem.name}에는 자식 카테고리가 있습니다. 삭제 하시겠습니까?`);
+                if(result) {
+                    this.removeUICData(citem);
+                } else {
+                    return;
+                }
             } else {
-                this.removeUICData(citem);
-            }
-            if (citem) {
-                citem.editable = false;
+                const result = await this.showConfirm(`${citem.name}을 삭제 하시겠습니까?`);
+                if(result) {
+                     this.removeUICData(citem);
+                }
+                
             }
         },
         plusSaveCategory() {
             console.log(citem);
         },
-        ondrop(data) {
-            if (data.node.isLeaf && !data.node.parent.parent) {
-                data.target = data.src;
-            }
-            if (!data.node.isLeaf && data.node.parent.parent) {
-                data.target = data.src;
-            }
-        },
-        ondropBefore(data) {
-            if (data.node.isLeaf && !data.node.parent.parent) {
-                data.target = data.src;
-            }
-            if (!data.node.isLeaf && data.node.parent.parent) {
-                data.target = data.src;
-            }
-            return null;
-        },
-        ondropAfter(node) {
-            console.log(node.src);
-        },
-        getNewTree: function() {
-            var vm = this
+        swapCategories(sitem, isUp) {
+            let cData = JSON.parse(JSON.stringify(this.cData));
 
-            function _dfs(oldNode) {
-                var newNode = {}
-
-                for (var k in oldNode) {
-                    if (k !== 'children' && k !== 'parent') {
-                        newNode[k] = oldNode[k]
+            for (let index =0; index < cData.length; index++) {
+                let pitem = cData[index];
+                if (pitem.id === sitem.id) {
+                    if(isUp) {
+                        if(index > 0) {
+                            let ctemp = cData[index -1];
+                            cData[index] = ctemp;
+                            cData[index-1] = sitem;
+                        }
+                    } else {
+                        if(index < (cData.length-1)) {
+                            let ctemp = cData[index + 1];
+                            cData[index] = ctemp;
+                            cData[index+1] = sitem;
+                        }
                     }
+                    this.cData = cData;
+                    return true;
                 }
 
-                if (oldNode.children && oldNode.children.length > 0) {
-                    newNode.children = []
-                    for (var i = 0, len = oldNode.children.length; i < len; i++) {
-                        newNode.children.push(_dfs(oldNode.children[i]))
+                for (let sindex=0; sindex < pitem.children.length ; sindex++) {
+                    let citem = pitem.children[sindex];
+                        if (citem.id === sitem.id) {
+                            if(isUp) {
+                                if(sindex > 0) {
+                                    let ctemp = cData[index].children[sindex -1];
+                                    cData[index].children[sindex] = ctemp;
+                                    cData[index].children[sindex-1] = sitem;
+                                }
+                            } else {
+                                if(sindex < (cData[index].children.length-1)) {
+                                    let ctemp = cData[index].children[sindex + 1];
+                                    cData[index].children[sindex] = ctemp;
+                                    cData[index].children[sindex+1] = sitem;
+                                }
+                            }
+                        this.cData = cData;
+                        return true;
                     }
                 }
-                return newNode
             }
-
-            vm.newTree = _dfs(vm.data)
         },
-        onClick(model) {
-            console.log(model);
+        plusMoveUp(item) {
+            this.swapCategories(item,true);
+        },
+        plusMoveDown(item) {
+            this.swapCategories(item,false);
         },
         checkFormValidity() {
-            return this.cNewName.length > 2 && !this.cNewName.includes(' ');
+            if(this.cNewName.length < 2) {
+                 this.showAlert('카테고리 이름이 너무 짧습니다.(2글자이상)');
+                 return false;
+            }
+            if(this.cNewName.includes(' ')) {
+                 this.showAlert('카테고리 이름에 공백이 있습니다.');
+                 return false;
+            }
+            return true;
         },
         resetCategoryModal() {
             this.name = ''
             this.nameState = null
+        },
+        handleCategoryRenameOk(bvModalEvt) {
+            bvModalEvt.preventDefault();
+            this.handleRenameSubmit();
+        },
+        async handleRenameSubmit() {
+            // Exit when the form isn't valid
+            if (!this.checkFormValidity()) {
+                return
+            }
+
+            const cname = this.cNewName;
+            if(this.selectedCData) {
+                this.selectedCData.name = cname; 
+            }
+
+              this.$nextTick(() => {
+                this.$refs.modal_cate_rename.hide()
+            })
         },
         handleCategoryOk(bvModalEvt) {
             bvModalEvt.preventDefault()
             this.handleSubmit()
         },
         async handleSubmit() {
-            // Exit when the form isn't valid
             if (!this.checkFormValidity()) {
-                this.showAlert("카테고리 이름이 잘못되었습니다.");
                 return
             }
 
@@ -378,27 +417,22 @@ export default {
                     citem.children.push({
                         name: cname,
                         id: result.data,
-                        editable: false,
                     });
                 } else {
                     citem['children'] = [];
                     citem['children'].push({
                         name: cname,
                         id: result.data,
-                        editable: false,
                     });
                 }
             } else {
                 this.cData.push({
                     name: cname,
                     id: result.data,
-                    editable: false,
-                    children: {}
+                    children: []
                 });
             }
 
-            // Push the name to submitted names
-            // Hide the modal manually
             this.$nextTick(() => {
                 this.$refs.modal_cate_name.hide()
             })

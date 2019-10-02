@@ -9,6 +9,8 @@ export class ElementCItemGenerator {
                 let parentItemName = item.name;
                 if(!item.children) {
                     return item.id;
+                } else if( item.children && item.children.length < 1) {
+                    return item.id;
                 }
                 
                 if(item.children && item.children.length > 0) {
@@ -80,7 +82,7 @@ export class ElementCItemGenerator {
                
                 let resultItem = {
                     name: item.name,
-                    url: `/cadminboard/tables?div${item.id}=q&cid=${item.id}`,
+                    url: `/cadminboard/tables?cid=${item.id}`,
                     icon: 'icon-doc',
                 };
                 
@@ -90,7 +92,7 @@ export class ElementCItemGenerator {
                     item.children.forEach( (citem, index) => {
                         let childItem = {
                             name: citem.name,
-                            url: `/cadminboard/tables?div${citem.id}=q&cid=${citem.id}`,
+                            url: `/cadminboard/tables?cid=${citem.id}`,
                             icon: 'icon-arrow-right-circle',
                             attributes: {
                                class: 'ml-3'   
@@ -104,6 +106,7 @@ export class ElementCItemGenerator {
         }
         return categories;
     }
+
     static genMakeSidebarCTablesItems(datas) {
         let categories = {
             items: [
@@ -122,7 +125,7 @@ export class ElementCItemGenerator {
                
                 let resultItem = {
                     name: item.name,
-                    url: `/cadminboard/tables?div${item.id}=q&cid=${item.id}`,
+                    url: `/cadminboard/tables?cid=${item.id}`,
                     icon: 'icon-doc',
                 };
                 
@@ -132,7 +135,7 @@ export class ElementCItemGenerator {
                     item.children.forEach( (citem, index) => {
                         let childItem = {
                             name: citem.name,
-                            url: `/cadminboard/tables?div${citem.id}=q&cid=${citem.id}`,
+                            url: `/cadminboard/tables?cid=${citem.id}`,
                             icon: 'icon-arrow-right-circle',
                             attributes: {
                                class: 'ml-3'   
@@ -165,7 +168,7 @@ export class ElementCItemGenerator {
                
                 let resultItem = {
                     name: item.name,
-                    url: `/cqboards/cquestions?div${item.id}=q&cid=${item.id}`,
+                    url: `/cqboards/cquestions?cid=${item.id}`,
                     icon: 'icon-doc',
                 };
                 
@@ -175,7 +178,7 @@ export class ElementCItemGenerator {
                     item.children.forEach( (citem, index) => {
                         let childItem = {
                             name: citem.name,
-                            url: `/cqboards/cquestions?div${citem.id}=q&cid=${citem.id}`,
+                            url: `/cqboards/cquestions?cid=${citem.id}`,
                             icon: 'icon-arrow-right-circle',
                             attributes: {
                                class: 'ml-3'   
