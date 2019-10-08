@@ -211,6 +211,11 @@ export default new Router({
                     beforeEnter: requireAuth(),
                 },
                 {
+                    path: 'cregister',
+                    name: 'CRegister',
+                    component: Register
+                },
+                {
                     path: 'ceditor',
                     name: 'Categoriesboard',
                     component: CategoriesboardEditor,

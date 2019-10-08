@@ -96,20 +96,21 @@ export default {
         initSurvey(questions, oldAnswers) {
             this.survey = new Survey.Model(questions, "surveyContainer");
                 this.survey.css = myCss;
-                this.survey.locale = 'ko';
+                this.survey.locale = 'en';
+                this.survey.surveyLocalization.defaultLocale = "ko";
                 this.survey.mode = 'display';
                  if(oldAnswers) {
                     this.survey.data = oldAnswers
                 };
+                this.survey.render();
         },
         async loadQuestions(cid) {
             let qresult = await this.contentsService.getCQuestions(cid);
             if(qresult.code === ServiceError.success) {
                 if(qresult.code == ServiceError.success) {
-                    this.initSurvey(JSON.parse(qresult.data.data), cid, qresult.data.id );
+                    this.initSurvey(JSON.parse(qresult.data.data));
                 } else {
                     this.survey = new Survey.Model(null, "surveyContainer");
-                    this.survey.css = myCss;
                     this.survey.locale = 'ko';
                 }
             } else {

@@ -31,7 +31,7 @@
                     </div>
                 </div>
                 <div class="dropdown-divider mt-0 mb-0" style="border-color:gray;" />
-                <main v-if="!this.isSidebar">
+                <main v-if="this.currentMode == this.screenMode.aview">
                 <div class="brand-card-body bg-info mb-0 pb-0">
                     <div>
                         <div class="text-light small font-weight-bold">답변자:</div>
@@ -117,7 +117,8 @@ export default {
                 creator: 0,
                 atable: 1,
                 statistics: 2,
-                aview: 3
+                aview: 3,
+                register: 4,
             },
             nav: nav.items,
             user: {
@@ -188,6 +189,11 @@ export default {
                 this.currentMode = this.screenMode.aview;
                 this.isSidebar =  false;
                 console.log('mode aview');
+            } else if(this.$route.path.includes('cadminboard/cregister')) {
+                this.currentMode = this.screenMode.register;
+                this.isSidebar =  false;
+                console.log('mode register');
+                return;
             }
             let isViewChanged = false;
             if(oldMode != this.currentMode) {

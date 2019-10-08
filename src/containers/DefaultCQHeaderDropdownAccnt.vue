@@ -8,9 +8,9 @@
              <b-dropdown-header tag="div" class="text-center">
                 <strong>설문지</strong>
             </b-dropdown-header>
-            <b-dropdown-item @click="goquestions">
-                <i class="icon-book-open icons" /> 설문화면
-            </b-dropdown-item>
+            <b-dropdown-item @click="goregister">
+                <i class="icon-book-open icons" /> 사용자 등록
+            </b-dropdown-item>                      
             <b-dropdown-item @click="goanswers">
                 <i class="icon-book-open icons" /> 답변지화면
             </b-dropdown-item>
@@ -26,7 +26,7 @@
             <b-dropdown-item @click="logout">
                 <i class="fa fa-lock" /> 로그 아웃
             </b-dropdown-item>
-            <b-dropdown-item>
+           <!-- <b-dropdown-item>
                 <i class="fa fa-user" /> 프로필
             </b-dropdown-item>
             <b-dropdown-header tag="div" class="text-center">
@@ -34,7 +34,7 @@
             </b-dropdown-header>
             <b-dropdown-item>
                 <i class="fa fa-wrench" /> 설정
-            </b-dropdown-item>
+            </b-dropdown-item>-->
         </template>
     </AppHeaderDropdown>
 </template>
@@ -62,6 +62,9 @@ export default {
                await this.showAlert("로그 아웃 실패");
             }
             this.adjustLoginFormUI();
+        },
+        goregister: function() {
+            this.$router.push(`/cadminboard/cregister?d=${Date.now()}`);
         },
         gocquestions: function() {
             this.$router.push('/cqboards/cquestions');

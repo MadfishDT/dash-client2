@@ -56,7 +56,6 @@ export default {
         var headerColor = "#7ff07f";
         var headerBackgroundColor = "#4a4a4a";
         var bodyContainerBackgroundColor = "#f8f8f8";
-
         SurveyCreator.localization.currentLocale = "ko";
         var defaultThemeColorsEditor =
             SurveyCreator.StylesManager.ThemeColors["default"];

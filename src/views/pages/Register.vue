@@ -11,25 +11,10 @@
                                     <h1>등록</h1>
                                     </b-col>
                                     <b-col>
-                                    <h5 class="text-right pt-3 text-primary"><a href src="/"><u>로그인 창으로</u></a></h5>
                                     </b-col>
                                 </b-row>
                                 <p class="text-muted">계정 생성</p>
                                 <b-row>
-                                    <!--<b-col class="col-md-3 mt-0 pt-0">
-                                        <b-row>
-                                        <img type="file"
-                                            :src="userImage"
-                                            class="mt-2 rounded img-thumbnail mb-1"
-                                            alt="Profile"
-                                        />
-                                        </b-row>
-                                        <b-row>
-                                            <input type="file" ref="profileImgFrom"  @change="previewFiles" style="display: none"/>
-                                            <b-button class="mb-2" variant="danger" @click="$refs.profileImgFrom.click()" block>
-                                            <i class="fa fa-folder fa-lg"/></b-button>
-                                        </b-row>
-                                    </b-col>-->
                                     <b-col class="col-md-12">
                                         <b-row>
                                             <b-col>
@@ -103,24 +88,6 @@
                                         </b-row>
                                         <b-row>
                                             <b-col>
-                                              <!--  <b-input-group class="mb-3">
-                                                    <b-input-group-prepend>
-                                                        <b-input-group-text>
-                                                            <i class="fa fa-building-o"></i>
-                                                        </b-input-group-text>
-                                                    </b-input-group-prepend>
-                                                    <b-form-select
-                                                        id="companycode"
-                                                        class="form-control"
-                                                        v-model="selectedCompany"
-                                                        :plain="true"
-                                                        :options="companyOptions"
-                                                        :disabled="false"
-                                                        v-on:change="getCompanySelectedItem"
-                                                        value="Please select"
-                                                    ></b-form-select>
-                                                </b-input-group>-->
-
                                                 <b-input-group
                                                     class="mb-3"
                                                 >
@@ -130,7 +97,7 @@
                                                         </b-input-group-text>
                                                     </b-input-group-prepend>
                                                     <b-form-input
-                                                        type="text"
+                                                        type="text" readonly
                                                         class="form-control"
                                                         placeholder="회사 이름"
                                                         v-model="cName"
@@ -150,7 +117,7 @@
                                                             <i>부서이름</i>
                                                         </b-input-group-text>
                                                     </b-input-group-prepend>
-                                                    <b-form-input type="text" v-model="partName" class="form-control" />
+                                                    <b-form-input type="text"  v-model="partName" class="form-control" />
                                                 </b-input-group>
                                             </b-col>
                                             <b-col>
@@ -160,7 +127,7 @@
                                                             <i>회사 코드</i>
                                                         </b-input-group-text>
                                                     </b-input-group-prepend>
-                                                    <b-form-input type="text" v-model="cCode" class="form-control" />
+                                                    <b-form-input readonly type="text" v-model="cCode" class="form-control" />
                                                 </b-input-group>
                                             </b-col>
                                         </b-row>
@@ -207,6 +174,9 @@ export default {
         console.log("mounted register");
         let result = await this.contentsService.getCompanys();
         let options = [{ value: -1, text: "--회사를 선택해 주세요--" }];
+        const user = this.$service.$loginservice.getUser();
+        this.cCode = user.company_code;
+        this.cName = user.company_name;
         result.data.forEach(item => {
             options.push({ value: item.id, text: item.name });
         });
@@ -270,7 +240,13 @@ export default {
                 } else if(result.code === ServiceError.unknown) {
                     this.showAlert('등록이 실패 하였습니다.');
                 } else if(result.code === ServiceError.success) {
-                    this.showAlert('등록되었습니다.','/');
+                    this.showAlert('등록되었습니다.');
+                    this.userImage= 'img/profile.png';
+                    this.userName= '';
+                    this.email= '';
+                    this.password= '';
+                    this.rePassword= '';
+                    this.partName= '';
                 }
             } else {
                  this.showAlert("필수 항목이 부족합니다.");

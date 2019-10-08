@@ -100,14 +100,19 @@ export default {
              }
         },
         initSurvey(questions, cid, qid , oldAnswers) {
+             if(questions.locale) {
+                    delete questions.locale;
+                }
             this.survey = new Survey.Model(questions, "surveyContainer");
 
+               
                 this.survey.completedHtml = `<span>등록중 입니다. 잠시만 기다려 주세요</span>`;
                 this.survey.css = myCss;
                 this.survey.locale = 'ko';
                  if(oldAnswers) {
                     this.survey.data = oldAnswers
                 };
+                this.survey.render();
                 this.survey
                 .onComplete
                 .add( async (answers) => {
