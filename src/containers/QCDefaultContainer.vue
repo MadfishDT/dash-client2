@@ -119,6 +119,7 @@ export default {
                 statistics: 2,
                 aview: 3,
                 register: 4,
+                cedit: 5
             },
             nav: nav.items,
             user: {
@@ -194,12 +195,17 @@ export default {
                 this.isSidebar =  false;
                 console.log('mode register');
                 return;
+            } else if(this.$route.path.includes('cadminboard/ceditor')) {
+                this.currentMode = this.screenMode.cedit;
+                this.isSidebar =  false;
+                console.log('cart editor');
+                return;
             }
-            let isViewChanged = false;
-            if(oldMode != this.currentMode) {
+          //  let isViewChanged = false;
+          //  if(oldMode != this.currentMode) {
                 await this.loadCategories();
-                isViewChanged = true;
-            }
+         //       isViewChanged = true;
+         //   }
             
             if(this.currentMode !== this.screenMode.aview) {
                 this.isSidebar = true;

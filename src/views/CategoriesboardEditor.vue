@@ -370,10 +370,6 @@ export default {
                  this.showAlert('카테고리 이름이 너무 짧습니다.(2글자이상)');
                  return false;
             }
-            if(this.cNewName.includes(' ')) {
-                 this.showAlert('카테고리 이름에 공백이 있습니다.');
-                 return false;
-            }
             return true;
         },
         resetCategoryModal() {
