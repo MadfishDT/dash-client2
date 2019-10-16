@@ -204,8 +204,7 @@ export default {
     },
     computed: {
         name() {
-            console.log("fweefwefwfe");
-            console.log(`${this.$route.query}`);
+             console.log(`${this.$route.query}`);
             
             return this.$route.name;
         },

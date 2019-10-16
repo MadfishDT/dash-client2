@@ -201,11 +201,7 @@ export default {
                 console.log('cart editor');
                 return;
             }
-          //  let isViewChanged = false;
-          //  if(oldMode != this.currentMode) {
-                await this.loadCategories();
-         //       isViewChanged = true;
-         //   }
+            await this.loadCategories();
             
             if(this.currentMode !== this.screenMode.aview) {
                 this.isSidebar = true;
@@ -256,12 +252,6 @@ export default {
                     this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(cdata);
                 }
             }
-
-           /* const result = await this.contentsService.getCategories();
-            if (result.code === this.$eservice.success) {
-                this.rawCategoriesDatas = result.data;
-                
-            }*/
         },
         setAUserInfo(user) {
             this.auser.fullname = user.user_name;
