@@ -6,14 +6,17 @@ import Router from 'vue-router'
 const DefaultContainer = () => import('@/containers/DefaultContainer')
 const QDefaultContainer = () => import('@/containers/QDefaultContainer')
 const QCDefaultContainer = () => import('@/containers/QCDefaultContainer')
-const CategoriesboardEditor = () => import('@/views/CategoriesboardEditor')
+
+const CategoriesboardEditor = () => import('@/views/adminpage/CategoriesboardEditor')
+const CampaignEditor = () => import('@/views/adminpage/CampaignEditor')
+const AnswerTables = () => import('@/views/adminpage/AnswerTables')
+const QuestionsCreator = () => import('@/views/adminpage/QuestionsCreator')
 
 // Views
 const Dashboard = () => import('@/views/Dashboard')
 const Questionsboard = () => import('@/views/Questionsboard')
 const QuestionsboardView = () => import('@/views/QuestionsboardView')
 
-const AnswerTables = () => import('@/views/pages/AnswerTables')
 
 const Colors = () => import('@/views/theme/Colors')
 const Typography = () => import('@/views/theme/Typography')
@@ -63,8 +66,6 @@ const Login = () => import('@/views/pages/Login')
 const AdminLogin = () => import('@/views/pages/AdminLogin')
 const Register = () => import('@/views/pages/Register')
 const Agreement = () => import('@/views/pages/Agreement')
-const QuestionsCreator = () => import('@/views/pages/QuestionsCreator')
-const CategoriesCreator = () => import('@/views/pages/CategoriesCreator');
 
 // Users
 const Users = () => import('@/views/users/Users')
@@ -161,22 +162,6 @@ export default new Router({
             ]
         },
         {
-            path: '/cac',
-            redirect: '/cac/catecreator',
-            name: 'CCategoriesCreator',
-            component: {
-                render(c) { return c('router-view') }
-            },
-            beforeEnter: requireAuth(),
-            children: [
-                {
-                    path: 'catecreator',
-                    name: 'Catecreator',
-                    component: CategoriesCreator
-                },
-            ]
-        },
-        {
             path: '/cqboards',
             redirect: '/cqboards/cquestions',
             name: 'CQuestions',
@@ -214,6 +199,12 @@ export default new Router({
                     path: 'cregister',
                     name: 'CRegister',
                     component: Register
+                },
+                {
+                    path: 'caeditor',
+                    name: 'CampaignEditor',
+                    component: CampaignEditor,
+                    beforeEnter: requireAuth(),
                 },
                 {
                     path: 'ceditor',

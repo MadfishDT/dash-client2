@@ -117,13 +117,14 @@
 
 <script>
 import { Callout } from "@coreui/vue";
-import { ServiceError } from '../service/service.error';
-import { ElementCItemGenerator } from '../containers/elementcitem.generator';
+import { ServiceError } from '@/service/service.error';
+import { ElementCItemGenerator } from '@/containers/elementcitem.generator';
+
 import { Tree, TreeNode, VueTreeList } from 'vue-tree-list';
 import Vue from 'vue';
 
 export default {
-    name: "categoriesEditorview",
+    name: "campaignEditor",
     components: {
         VueTreeList,
     },

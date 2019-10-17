@@ -82,7 +82,7 @@ import {
 import DefaultAside from "./DefaultAside";
 import DefaultHeaderDropdownAccnt from "./DefaultHeaderDropdownAccnt";
 import ElementItemGenerator from "./elementitem.generator";
-import QCDefaultContainer from "../views/pages/QuestionsCreator";
+import QCDefaultContainer from "../views/adminpage/QuestionsCreator";
 import { ServiceError } from '../service/service.error';
 export default {
     name: "QDefaultContainer",
