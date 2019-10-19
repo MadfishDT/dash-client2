@@ -43,16 +43,16 @@ export default {
       cNewName: '',
       fields: [
         {key: 'cdate', label: '생성시간'},
-        {key: 'campaign', label: '캠페인이름'},
-        {key: 'campaingid', label: '아이디'},
+        {key: 'name', label: '캠페인이름'},
+        {key: 'uid', label: '아이디'},
         {key: 'template', label: '템플릿'},
-        {key: 'portfolio', label: '포트폴리오'}
-
+        {key: 'portfolio', label: '포트폴리오'},
+        {key: 'active', label: '상태'}
       ],
     }
   },
     mounted: function() {
-      
+        this.loadCampaings();
     },
     created: function() {
        
@@ -79,16 +79,67 @@ export default {
         plusCampaign() {
             this.$refs.modal_cate_name.show();
         },
+        showAlert(msg, path) {
+            this.$bvModal.msgBoxOk(msg)
+                .then(value => {
+                    if (path) {
+                        this.$router.push(path);
+                    }
+                })
+                .catch(err => {
+                    return;
+                });
+        },
+        showConfirm(msg) {
+            this.boxTwo = ''
+            return this.$bvModal.msgBoxConfirm(msg, {
+                    title: '확인',
+                    size: 'sm',
+                    buttonSize: 'sm',
+                    okVariant: 'danger',
+                    okTitle: '확인',
+                    cancelTitle: '취소',
+                    footerClass: 'p-2',
+                    hideHeaderClose: false,
+                    centered: true
+                })
+                .then(value => {
+                    this.boxTwo = value
+                    return true;
+                })
+                .catch(err => {
+                    // An error occurred
+                    return false;
+                })
+        },
+        async loadCampaings() {
+            let result = await this.contentsService.getCampaigns();
+            console.log(`result : ${result}`);
+        },
         async handleAddCampaignOk() {
             let result = await this.contentsService.getUIDFromServer();
             if(result) {
-                this.itemsArray.push({
+                let cData = {
                     cdate: this.toDateString(new Date()),
-                    campaign: this.cNewName,
-                    campaingid: result.data,
+                    name: this.cNewName,
+                    uid: result.data,
                     template: '',
-                    portfolio: ''
-                });
+                    portfolio: '',
+                    active: '비활성'
+                }
+                 const aResult = await this.showConfirm(`${this.cNewName}을 추가 하시겠습니까?`);
+                if(aResult) {
+                    const sResult = await this.contentsService.addNewCampaign(cData);
+                    if(sResult.code  == ServiceError.success) {
+                        this.itemsArray.push(cData);
+                        this.showAlert('추가 되었습니다.');
+                    } else {
+                        this.showAlert('실패');
+                    }
+                }
+                
+               
+                
             }
             
         }

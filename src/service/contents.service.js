@@ -171,7 +171,23 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-    
+    async getCampaigns() {
+        let url = `${this.config.host}/getcauser`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success,result.data);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async addNewCampaign(campaign) {
         let url = `${this.config.host}/pushcp`;
         try {
@@ -184,8 +200,12 @@ export class ContentsService {
                     return this.makeErrorObject(ServiceError.autherror);
                 } else if(result.code === 409) {
                     return this.makeErrorObject(ServiceError.duplicate);
-                } else if(result.code === 406)
-                return this.makeErrorObject(ServiceError.notaccept);
+                } else if(result.code === 406) {
+                    return this.makeErrorObject(ServiceError.notaccept);
+                } else {
+                    return this.makeErrorObject(ServerError.fail);
+                }
+                
             }
         } catch(e) {
             return this.makeErrorObject(ServiceError.unknown);
