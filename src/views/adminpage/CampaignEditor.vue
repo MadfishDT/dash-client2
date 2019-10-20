@@ -94,9 +94,7 @@ export default {
             const ss = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
             return `${yyyy}/${mm}/${dd} ${hh}:${min}:${ss}`;
         },
-        async loadCampaign(cid) {
-            console.log(`loadCampaign`);
-        },
+      
         plusCampaign() {
             this.$refs.modal_cate_name.show();
         },
@@ -174,8 +172,8 @@ export default {
                 if(aResult) {
                     const sResult = await this.contentsService.addNewCampaign(cData);
                     if(sResult.code  == ServiceError.success) {
-                        this.itemsArray.push(cData);
                         this.showAlert('추가 되었습니다.');
+                        this.loadCampaings();
                     } else {
                         this.showAlert('실패');
                     }
