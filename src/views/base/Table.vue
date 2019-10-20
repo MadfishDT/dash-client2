@@ -1,9 +1,20 @@
 <template>
   <b-card>
     <div slot="header" v-html="caption"></div>
-    <b-table :dark="dark" :hover="hover" :striped="striped" @row-clicked="clicked" :bordered="bordered" :small="small" responsive="sm" :items="items" :fields="captions" :current-page="currentPage" :per-page="perPage">
-      <template slot="status" slot-scope="data">
-        <b-badge :variant="getBadge(data.item.status)">{{data.item.status}}</b-badge>
+    <b-table selected-variant="primary" 
+    :selectMode="selectMode" head-variant="dark" 
+    :selectable="selectable" :hover="hover" @row-clicked="clicked" @row-selected="rowSelected"
+    :bordered="bordered" :small="small" responsive="sm" :items="items" 
+    :fields="captions" :current-page="currentPage" :per-page="perPage">
+     <template v-slot:cell(selected)="{ rowSelected }">
+        <template v-if="rowSelected">
+          <span aria-hidden="true">&check;</span>
+          <span class="sr-only">Selected</span>
+        </template>
+        <template v-else>
+          <span aria-hidden="true">&nbsp;</span>
+          <span class="sr-only">Not selected</span>
+        </template>
       </template>
     </b-table>
     <nav>
@@ -22,6 +33,10 @@ export default {
       type: String,
       default: 'Table'
     },
+    selectMode: {
+      type: String,
+      default: 'single'
+    },
     hover: {
       type: Boolean,
       default: false
@@ -32,6 +47,10 @@ export default {
     },
     bordered: {
       type: Boolean,
+      default: false
+    },
+    selectable: {
+       type: Boolean,
       default: false
     },
     small: {
@@ -53,6 +72,10 @@ export default {
     perPage: {
       type: Number,
       default: 5
+    },
+    rowSelected: {
+      type: Function,
+      defualt: () => true
     },
     clicked: {
       type: Function,

@@ -14,9 +14,23 @@
     </b-row>
     <b-row>
       <b-col sm="12">
-        <c-table :fields="fields" :clicked="clickedRow" :table-data="itemsArray" :per-page=40 hover striped bordered small fixed 
+        <c-table :fields="fields" select-mode="single"
+        :selectable="true"
+        :rowSelected="onRowSelected"
+        :clicked="clickedRow"
+        :table-data="itemsArray" :per-page=40 hover striped bordered small fixed 
         caption="<i class='fa fa-align-justify'></i>캠페인 리스트"> </c-table>
       </b-col>
+    </b-row>
+    <b-row>
+        <b-col cols="10">
+        </b-col>
+        <b-col cols="1" class="text-right">
+             <b-button @click="editCampaign">수정</b-button>
+        </b-col>
+        <b-col cols="1" >
+             <b-button @click="editCampaign">삭제</b-button>
+        </b-col>
     </b-row>
   </div>
 
@@ -38,16 +52,17 @@ export default {
     return {
       contentsService: this.$service.$contentsservice,
       contentSubscription: null,
+      selected: null,
       cid: -1,
       itemsArray: someData(),
       cNewName: '',
       fields: [
-        {key: 'cdate', label: '생성시간'},
+        {key: 'date', label: '생성시간' , sortable: true},
         {key: 'name', label: '캠페인이름'},
         {key: 'uid', label: '아이디'},
         {key: 'template', label: '템플릿'},
         {key: 'portfolio', label: '포트폴리오'},
-        {key: 'active', label: '상태'}
+        {key: 'activated', label: '상태'}
       ],
     }
   },
@@ -61,6 +76,12 @@ export default {
   
     },
     methods: {
+        editCampaign() {
+            console.log('item is');
+        },
+        onRowSelected(items) {
+            this.selected = items
+        },
         clickedRow(record, index) {
             //this.$router.push(`/cadminboard/aview?cid=${this.cid}&uid=${aitem.userid}&aid=${aitem.id}`);
         },
@@ -114,13 +135,35 @@ export default {
         },
         async loadCampaings() {
             let result = await this.contentsService.getCampaigns();
+            
             console.log(`result : ${result}`);
+            if(result.code === ServiceError.success) {
+                this.itemsArray = [];
+                result.data.forEach(itemCampaigns => {
+
+                        /*{key: 'date', label: '생성시간' , sortable: true},
+                        {key: 'name', label: '캠페인이름'},
+                        {key: 'uid', label: '아이디'},
+                        {key: 'template', label: '템플릿'},
+                        {key: 'portfolio', label: '포트폴리오'},
+                        {key: 'active', label: '상태'}*/
+                    
+                    const dateTime = new Date(itemCampaigns.date);
+                    let newItem = {
+                        name: itemCampaigns.name,
+                        uid: itemCampaigns.uid,
+                        date: this.toDateString(dateTime),
+                        activated: itemCampaigns.activated ? '활성' : '비활성'
+                    }
+                    
+                    this.itemsArray.push(newItem);
+                });
+            }
         },
         async handleAddCampaignOk() {
             let result = await this.contentsService.getUIDFromServer();
             if(result) {
                 let cData = {
-                    cdate: this.toDateString(new Date()),
                     name: this.cNewName,
                     uid: result.data,
                     template: '',
@@ -136,10 +179,7 @@ export default {
                     } else {
                         this.showAlert('실패');
                     }
-                }
-                
-               
-                
+                } 
             }
             
         }
