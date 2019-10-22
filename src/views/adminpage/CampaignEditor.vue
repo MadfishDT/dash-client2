@@ -74,7 +74,7 @@
             <b-col cols="3">
                 <b-button @click="modifyCampaignName">이름변경</b-button>
                 <b-button class="ml-2" @click="detailCampaign">자세히</b-button>
-                <b-button class="ml-2" @click="deleteCampaign">삭제</b-button>
+                <b-button class="ml-2" @click="handleDeleteCampaign">삭제</b-button>
             </b-col>
             
         </b-row>
@@ -121,15 +121,6 @@ export default {
     methods: {
         detailCampaign() {
             console.log("item is");
-        },
-        async deleteCampaign() {
-            const msg = `${this.selected.name}: ${this.selected.uid}를 삭제 하시겠습니까?`;
-            const dResult = await this.showConfirm(msg);
-            if(dResult) {
-
-            } else {
-
-            }
         },
         onRowSelected(items) {
             this.selected = items[0];
@@ -204,9 +195,13 @@ export default {
                     return false;
                 });
         },
+        resetSelected() {
+            this.selected = {name: ''};
+            this.selectedItem = '';
+        },
         async loadCampaings() {
+            this.resetSelected();
             let result = await this.contentsService.getCampaigns();
-
             console.log(`result : ${result}`);
             if (result.code === ServiceError.success) {
                 this.itemsArray = [];
@@ -223,8 +218,41 @@ export default {
                 });
             }
         },
+        async handleDeleteCampaign() {
+            if(this.selected) {
+                const msg = `[${this.selected.name}: ${this.selected.uid}]를 삭제 하시겠습니까?`;
+                const dResult = await this.showConfirm(msg);
+                if(dResult) {
+                    const rResult = await this.contentsService.deleteCategory(this.selected.uid);
+                    if(rResult.code === ServiceError.success) {
+                        this.showAlert('삭제 되었습니다.');
+                        this.loadCampaings();
+                    } else {
+                        this.showAlert('삭제 실패');
+                    }
+                } else {
+                    return;
+                }
+            }
+           
+        },
         async handleModifyCampaignNameOk() {
             //this.selected.name
+            if(this.cModiName.length > 0) {
+                let copyItem = JSON.parse(JSON.stringify(this.selected));
+                copyItem.name = this.cModiName;
+                const result = await this.contentsService.updateCampaignName(copyItem);
+                if(result.code === ServiceError.success) {
+                    this.showAlert('수정 되었습니다.');
+                    this.loadCampaings();
+                } else {
+                    this.showAlert('변경 실패');
+                }
+            } else {
+                this.showAlert('변경할 이름이 잘못되었습니다.');
+            }
+            this.cModiName = '';
+            
         },
         async handleAddCampaignOk() {
             let result = await this.contentsService.getUIDFromServer();
@@ -240,9 +268,7 @@ export default {
                     `${this.cNewName}을 추가 하시겠습니까?`
                 );
                 if (aResult) {
-                    const sResult = await this.contentsService.addNewCampaign(
-                        cData
-                    );
+                    const sResult = await this.contentsService.addNewCampaign(cData);
                     if (sResult.code == ServiceError.success) {
                         this.showAlert("추가 되었습니다.");
                         this.loadCampaings();

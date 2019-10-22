@@ -40,6 +40,7 @@ export class RequestService {
             xhr.send(body);
         });
     }
+
     requestGet(host, headers = null) {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
@@ -63,6 +64,32 @@ export class RequestService {
                             resultData = JSON.parse(xhr.response);
                         }
                     }
+                    resolve({ result: true, code: xhr.status, data: resultData });
+                } else if (xhr.readyState == 4) {
+                    resolve({ result: false, code: xhr.status });
+                }
+            }
+
+            xhr.onerror = () => {
+                reject();
+            }
+
+            xhr.send();
+        });
+    }
+
+    requestDelete(host) {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            let url = host;
+
+            xhr.open('DELETE', url, true);
+            xhr.withCredentials = true;
+
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    let typeText = xhr.getResponseHeader('Content-Type');
+                    let resultData = xhr.response;
                     resolve({ result: true, code: xhr.status, data: resultData });
                 } else if (xhr.readyState == 4) {
                     resolve({ result: false, code: xhr.status });
