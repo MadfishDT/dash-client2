@@ -265,7 +265,28 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-
+    async updateCampaignStatus(campaign) {
+        let url = `${this.config.host}/udatecps`;
+        try {
+            let result = await this.requestService.requestPost(url, JSON.stringify(campaign),
+            [{ kind: 'Content-Type', value: 'application/json' }]);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                } else if(result.code === 409) {
+                    return this.makeErrorObject(ServiceError.duplicate);
+                } else if(result.code === 406){
+                    return this.makeErrorObject(ServiceError.notaccept);
+                } else {
+                    return this.makeErrorObject(ServiceError.unknown);
+                }
+            }
+        } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async updateCampaignName(campaign) {
         let url = `${this.config.host}/udatecp`;
         try {

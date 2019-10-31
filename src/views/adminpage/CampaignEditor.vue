@@ -2,9 +2,30 @@
     <div class="animated fadeIn">
         <b-modal
             centered
+            id="modal-modify_status"
+            ref="modal_modify_status"
+            title="상태를 변경하세요"
+            ok-title="확인"
+            cancel-title="취소" 
+            @ok="handleActiveStatus"
+        >
+         <b-form-radio-group v-model="campaignStatus" id="basicRadios"
+              :plain="true"
+              :options="[
+                {text: '활성화',value: true},
+                {text: '비활성화',value: false},
+              ]"
+              checked="0"
+              stacked>
+            </b-form-radio-group>
+        </b-modal>
+        <b-modal
+            centered
             id="modal-modify_name"
             ref="modal_modify_name"
             title="수정할 캠페인 이름을 넣으세요"
+            ok-title="확인"
+            cancel-title="취소" 
             @ok="handleModifyCampaignNameOk"
         >
             <form ref="form" @submit.stop.prevent="handleSubmit">
@@ -15,7 +36,7 @@
                 >
                     <b-form-input
                         id="name-input"
-                        :placeholder="selected.name"
+                        :placeholder="selectedName"
                         v-model="cModiName"
                         required
                     ></b-form-input>
@@ -27,6 +48,8 @@
             id="modal-portfolio"
             ref="modal_portfolio_select"
             title="포트 폴리오 선택"
+            ok-title="확인"
+            cancel-title="취소"
             @ok="handleSelectPortfolioOk"
         >
             <b-row>
@@ -66,6 +89,8 @@
             id="modal-new-name"
             ref="modal_new_name"
             title="새로운 캠페인 이름을 넣으세요"
+            ok-title="확인"
+            cancel-title="취소"
             @ok="handleAddCampaignOk"
         >
             <form ref="form" @submit.stop.prevent="handleSubmit">
@@ -111,7 +136,7 @@
                                 </b-input-group-text>
                             </b-input-group-prepend>
                             <b-form-input
-                                :readonly="false"
+                                :readonly="true"
                                 type="text"
                                 v-model="selectedItem"
                                 class="form-control"
@@ -122,7 +147,7 @@
                         <b-button @click="modifyCampaignName">이름변경</b-button>
                         <b-button class="ml-2" @click="detailCampaign">자세히</b-button>
                         <b-button class="ml-2" @click="handleDeleteCampaign">삭제</b-button>
-                        <b-button class="ml-2" @click="handleStatusChangeCampaign">상태변경</b-button>
+                        <b-button class="ml-2" variant="primary" @click="handleStatusChangeCampaign">상태변경</b-button>
                     </b-col>
                 </b-row>
             </b-col>
@@ -134,6 +159,8 @@
                 <b-row>
                     <b-col cols="5">
                         <b-card class="mt-4">
+
+                            
                             <div slot="header">회사 선택</div>
                             <b-form-select
                                 value-field="code"
@@ -183,11 +210,15 @@
                                     <b-button
                                         class="ml-2 mt-2"
                                         @click="handleDeleteMappingCompayList"
-                                        style="float: right;"
-                                    >삭제</b-button>
+                                        style="float: right;">삭제</b-button>
                                 </b-col>
                             </b-row>
                         </b-card>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                      <b-button style="float: right;" class="mb-2" variant="primary" @click="applyPortfolioToCampaign">포트 폴리오 적용하기</b-button>
                     </b-col>
                 </b-row>
             </b-col>
@@ -209,21 +240,23 @@ export default {
     },
     data: function() {
         return {
+            campaignStatus: false,
             contentsService: this.$service.$contentsservice,
             contentSubscription: null,
             selectedItem: "",
-            selected: { name: "" },
+            selected: null,
+            selectedName: '',
             cid: -1,
             cModiName: "",
             itemsArray: someData(),
             cNewName: "",
             fields: [
-                { key: "date", label: "생성시간", sortable: true },
-                { key: "name", label: "캠페인이름" },
+                { key: "date", label: "마지막 수정시간", sortable: true },
+                { key: "name", label: "캠페인이름", sortable: true  },
                 { key: "uid", label: "아이디" },
                 { key: "template", label: "템플릿" },
                 { key: "portfolio", label: "포트폴리오" },
-                { key: "activated", label: "상태" }
+                { key: "activatedText", label: "상태" }
             ],
             companySelected: "", // Array reference
             companysOptions: [
@@ -253,11 +286,13 @@ export default {
             console.log("item is");
         },
         onRowSelected(items) {
-            this.selected = items[0];
             if (items && items.length > 0) {
                 this.selectedItem = `${items[0].name} : ${items[0].uid}`;
+                this.selected = items[0];
+                this.selectedName = items[0].name;
             } else {
-                this.selectedItem = "";
+                this.selectedItem = '';
+                this.selectedName = '';
             }
         },
         clickedRow(record, index) {
@@ -284,7 +319,9 @@ export default {
             return `${yyyy}/${mm}/${dd} ${hh}:${min}:${ss}`;
         },
         modifyCampaignName() {
-            this.$refs.modal_modify_name.show();
+            if(this.selected) {
+                this.$refs.modal_modify_name.show();
+            }
         },
         plusCampaign() {
             this.$refs.modal_new_name.show();
@@ -303,6 +340,9 @@ export default {
                 .catch(err => {
                     return;
                 });
+        },
+        showNotSelectedCampaign() {
+            this.showAlert("캠패인을 선택하세요");
         },
         showConfirm(msg) {
             this.boxTwo = "";
@@ -328,7 +368,7 @@ export default {
                 });
         },
         resetSelected() {
-            this.selected = { name: "" };
+            this.selected = null;
             this.selectedItem = "";
         },
         async loadCompany() {
@@ -352,7 +392,6 @@ export default {
         async loadCampaings() {
             this.resetSelected();
             let result = await this.contentsService.getCampaigns();
-            console.log(`result : ${result}`);
             if (result.code === ServiceError.success) {
                 this.itemsArray = [];
                 result.data.forEach(itemCampaigns => {
@@ -361,7 +400,8 @@ export default {
                         name: itemCampaigns.name,
                         uid: itemCampaigns.uid,
                         date: this.toDateString(dateTime),
-                        activated: itemCampaigns.activated ? "활성" : "비활성"
+                        activated: itemCampaigns.activated,
+                        activatedText: itemCampaigns.activated ? "활성" : "비활성"
                     };
 
                     this.itemsArray.push(newItem);
@@ -391,12 +431,12 @@ export default {
         handleDeleteMappingCompayList() {
             if(this.companyMappingSelected) {
                 const index = this.companysMapppingOptions.findIndex((item) => {
-                    if(this.companyMappingSelected == item.value) {
+                    if(this.companyMappingSelected == item.code) {
                         return true;
                     }
                 });
                 if(index >= 0) {
-                    this.companysMapppingOptions = this.companysMapppingOptions.filter(item => item.value !== this.companyMappingSelected)
+                    this.companysMapppingOptions = this.companysMapppingOptions.filter(item => item.code !== this.companyMappingSelected)
                 }
             }
             
@@ -436,7 +476,12 @@ export default {
             }
         },
         async handleStatusChangeCampaign() {
-
+            if(this.selected) {
+                this.campaignStatus = this.selected.activated;
+                this.$refs.modal_modify_status.show();
+            } else {
+                this.showNotSelectedCampaign();     
+            }
         },
         handleSelectPortfolioOk() {
             if(this.portfolioSelected) {
@@ -486,7 +531,7 @@ export default {
                     uid: result.data,
                     template: "",
                     portfolio: "",
-                    active: "비활성"
+                    activated: "비활성"
                 };
                 const aResult = await this.showConfirm(
                     `${this.cNewName}을 추가 하시겠습니까?`
@@ -503,6 +548,26 @@ export default {
                     }
                 }
             }
+        },
+        async handleActiveStatus() {
+            if(this.selected) {
+                this.selected.activated = this.campaignStatus;
+                const result = await this.contentsService.updateCampaignStatus(this.selected);
+                if(result.code === ServiceError.success) {
+                    this.showAlert("상태 변경 성공");
+                    this.loadCampaings();
+                } else {
+                    this.showAlert("상태 변경 실패 Error");
+                }
+
+            }
+            console.log(`this is current status: ${this.campaignStatus}`);
+        },
+        async applyPortfolioToCampaign() {
+
+        },
+        handleDeactiveStatus() {
+
         }
     }
 };
