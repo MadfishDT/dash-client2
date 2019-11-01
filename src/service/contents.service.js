@@ -184,7 +184,40 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-
+    async getCampaignMappings(uid) {
+        let url = `${this.config.host}/getcm?uid=${uid}`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success,result.data);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
+    async addCampaignMappings(campaign, companies) {
+        let url = `${this.config.host}/cmn`;
+        try {
+            let result = await this.requestService.requestPost(url, JSON.stringify({campaign: campaign, companies: companies}),
+            [{ kind: 'Content-Type', value: 'application/json' }]);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async addCQuestions(categoriid, data) {
         let url = `${this.config.host}/wcqustions`;
         try {

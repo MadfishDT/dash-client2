@@ -159,8 +159,6 @@
                 <b-row>
                     <b-col cols="5">
                         <b-card class="mt-4">
-
-                            
                             <div slot="header">회사 선택</div>
                             <b-form-select
                                 value-field="code"
@@ -285,11 +283,21 @@ export default {
         detailCampaign() {
             console.log("item is");
         },
-        onRowSelected(items) {
+        async onRowSelected(items) {
             if (items && items.length > 0) {
                 this.selectedItem = `${items[0].name} : ${items[0].uid}`;
                 this.selected = items[0];
                 this.selectedName = items[0].name;
+                const resultMappings = await this.contentsService.getCampaignMappings(this.selected.uid);
+                if(resultMappings.code === ServiceError.success) {
+                    if(resultMappings.data) {
+                        if(resultMappings.data.companies && resultMappings.data.companies.length > 0) {
+                            this.companysMapppingOptions= resultMappings.data.companies;
+                        }
+                    }
+                } else {
+                    this.companysMapppingOptions = [];
+                }
             } else {
                 this.selectedItem = '';
                 this.selectedName = '';
@@ -564,7 +572,21 @@ export default {
             console.log(`this is current status: ${this.campaignStatus}`);
         },
         async applyPortfolioToCampaign() {
-
+            if(this.selected) {
+                console.log(this.companysMapppingOptions);
+                let codes = [];
+                this.companysMapppingOptions.forEach( item =>{
+                    console.log("thishisfsfs");
+                    codes.push(item.code);
+                } );
+                console.log(codes);
+                const addCampaignMappingResult = await this.contentsService.addCampaignMappings(this.selected,codes);
+                if(addCampaignMappingResult.code === ServiceError.success) {
+                    this.showAlert('포트폴리오 저장 완료');
+                }
+            } else {
+                this.showAlert('선택된 캠패인이 없습니다.');
+            }
         },
         handleDeactiveStatus() {
 
