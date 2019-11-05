@@ -242,7 +242,7 @@ export default {
                 if (this.$route.query && this.$route.query.cid) {
                     const cid = this.$route.query.cid;
                     
-                    if (this.cid !== cid || isViewChanged == true) {
+                    if (this.cid !== cid) {
                         this.cid = cid;
                         this.contentsService.categoryChangeSubject.next(cid);
                         this.questionsTitle = ElementCItemGenerator.genMakeCategoryItemsDisplayName(
