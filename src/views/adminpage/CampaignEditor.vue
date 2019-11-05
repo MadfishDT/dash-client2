@@ -45,6 +45,32 @@
         </b-modal>
         <b-modal
             centered
+            id="modal-category_template"
+            ref="modal_category_template"
+            title="템플릿(카테고리) 선택하기"
+            ok-title="확인"
+            cancel-title="취소"
+            @ok="handleSelectTemplateOk"
+        >
+            <b-row>
+                <b-col cols="12">
+                        <b-form-select
+                            value-field="code"
+                            text-field="name"
+                            v-model="selectTemplate"
+                            :options="templateOptions"
+                            :select-size="6"
+                        ></b-form-select>
+                  
+                     <div class="mt-3">
+                            선택(ID):
+                            <strong>{{ selectTemplate }}</strong>
+                        </div>
+                </b-col>
+            </b-row>
+        </b-modal>
+        <b-modal
+            centered
             id="modal-portfolio"
             ref="modal_portfolio_select"
             title="포트 폴리오 선택"
@@ -155,7 +181,9 @@
 
         <b-row style="border: 1px solid rgba(0, 0, 0, 0.1);">
             <b-col>
-                <b-row></b-row>
+                <b-row>
+                      <h3>포트폴리오 정보</h3>
+                </b-row>
                 <b-row>
                     <b-col cols="5">
                         <b-card class="mt-4">
@@ -221,6 +249,39 @@
                 </b-row>
             </b-col>
         </b-row>
+        <b-row style="border: 1px solid rgba(0, 0, 0, 0.1);" class='mt-2'>
+        <b-col>
+            <b-row>
+                <h3>템플릿 정보</h3>
+            </b-row>
+            <b-row>
+                    <b-col cols="10" class="mt-2">
+                        <b-input-group class="mb-3">
+                            <b-input-group-prepend>
+                                <b-input-group-text>
+                                    <i>선택</i>
+                                </b-input-group-text>
+                            </b-input-group-prepend>
+                            <b-form-input
+                                :readonly="true"
+                                type="text"
+                                v-model="selectedTemplate"
+                                class="form-control"
+                            />
+                        </b-input-group>
+                    </b-col>
+                    <b-col cols="2" class="mt-2">
+                        <b-button style="float: right;" class="ml-2" @click="handleTemplateDelete">삭제</b-button>
+                        <b-button style="float: right;" @click="handleTemplateSelector">선택/변경</b-button>
+                    </b-col>
+            </b-row>
+               <b-row>
+                    <b-col>
+                      <b-button style="float: right;" class="mb-2" variant="primary" @click="applyTemplateToCampaign">템플릿 적용하기</b-button>
+                    </b-col>
+                </b-row>
+        </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -271,6 +332,10 @@ export default {
             portfolioSelected: null,
             portfolioOptions: [],
             portfolioCompanyOptions: [],
+            
+            templateOptions: [],
+            selectTemplate: null,
+            selectedTemplate: null
         };
     },
     mounted: function() {
@@ -288,6 +353,16 @@ export default {
                 this.selectedItem = `${items[0].name} : ${items[0].uid}`;
                 this.selected = items[0];
                 this.selectedName = items[0].name;
+                if(items[0].ccode) {
+                    const templateResult = await this.contentsService.getCCategoriesByCode(items[0].ccode);
+                    if(templateResult.code === ServiceError.success) {
+                        this.selectedTemplate = `${templateResult.data.name}: ${templateResult.data.code}`;
+                    }
+                } else {
+                    this.selectedTemplate = '';
+                }
+                
+                console.log(this.selectedTemplate);
                 const resultMappings = await this.contentsService.getCampaignMappings(this.selected.uid);
                 if(resultMappings.code === ServiceError.success) {
                     if(resultMappings.data) {
@@ -383,6 +458,7 @@ export default {
             let result = await this.contentsService.getCompanys();
 
             if (result.code === ServiceError.success) {
+                console.log(result.data);
                 this.companysOptions = result.data;
             } else {
                 this.showAlert("회사 코드 획득 실패!!");
@@ -407,8 +483,10 @@ export default {
                     let newItem = {
                         name: itemCampaigns.name,
                         uid: itemCampaigns.uid,
+                        ccode: itemCampaigns.ccode,
                         date: this.toDateString(dateTime),
                         activated: itemCampaigns.activated,
+                        template: itemCampaigns.ccode,
                         activatedText: itemCampaigns.activated ? "활성" : "비활성"
                     };
 
@@ -443,7 +521,7 @@ export default {
                         return true;
                     }
                 });
-                if(index >= 0) {
+                if(index >= 0){
                     this.companysMapppingOptions = this.companysMapppingOptions.filter(item => item.code !== this.companyMappingSelected)
                 }
             }
@@ -458,7 +536,7 @@ export default {
                 const msg = `[${this.selected.name}: ${this.selected.uid}]를 삭제 하시겠습니까?`;
                 const dResult = await this.showConfirm(msg);
                 if (dResult) {
-                    const rResult = await this.contentsService.deleteCategory(
+                    const rResult = await this.contentsService.deleteCampaign(
                         this.selected.uid
                     );
                     if (rResult.code === ServiceError.success) {
@@ -567,7 +645,6 @@ export default {
                 } else {
                     this.showAlert("상태 변경 실패 Error");
                 }
-
             }
             console.log(`this is current status: ${this.campaignStatus}`);
         },
@@ -588,7 +665,38 @@ export default {
                 this.showAlert('선택된 캠패인이 없습니다.');
             }
         },
+        async applyTemplateToCampaign() {
+            if(this.selected && this.templateSelectedItem) {
+                this.selected.ccode = this.templateSelectedItem.code;
+                const result = await this.contentsService.updateCampaignTemplate(this.selected);
+                if(result.code === ServiceError.success) {
+                    this.showAlert("템플릿 적용 성공");
+                    this.loadCampaings();
+                } else {
+                     this.showAlert("템플릿 적용 실패");
+                }
+            }
+        },
         handleDeactiveStatus() {
+
+        },
+        handleSelectTemplateOk() {
+            if(this.selectTemplate) {
+                this.templateSelectedItem = this.templateOptions.find( (item) => {
+                    return item.code === this.selectTemplate;
+                });
+                this.selectedTemplate = `${this.templateSelectedItem.name}: ${this.templateSelectedItem.code}`;
+            }
+        },
+
+        async handleTemplateSelector() {
+            const result = await this.contentsService.getCCategoriesByUser();
+            if(result.code === ServiceError.success) {
+                this.templateOptions = result.data;
+            }
+            this.$refs.modal_category_template.show();
+        },
+        handleTemplateDelete() {
 
         }
     }

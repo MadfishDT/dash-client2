@@ -2,66 +2,93 @@
     <div class="app bg-white">
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile />
+
             <div class="navbar-brand" to="#">
                 <h2>Quantified</h2>
             </div>
+
             <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" />
+
             <b-navbar-nav class="ml-auto">
                 <DefaultCQHeaderDropdownAccnt />
             </b-navbar-nav>
         </AppHeader>
+
         <div class="app-body">
             <AppSidebar fixed>
-                <SidebarHeader/>
-                <SidebarForm/>
+                <SidebarHeader />
+
+                <SidebarForm />
+
                 <div class="brand-card-header bg-gray-700">
-                        <img
-                            id="img_profile"
-                            width="65"
-                            alt="No Image"
-                            class="img-avatar font-2xl mr-0 float-left"
-                            :src="this.user.imageUrl"
-                        />
+                    <img
+                        id="img_profile"
+                        width="65"
+                        alt="No Image"
+                        class="img-avatar font-2xl mr-0 float-left"
+                        :src="this.user.imageUrl"
+                    />
                 </div>
 
                 <div class="brand-card-body bg-dark mb-0 pb-0">
                     <div>
                         <div class="text-muted small">{{this.user.fullname}}</div>
+
                         <div class="text-muted small font-weight-bold">{{this.user.company}}</div>
                     </div>
                 </div>
+
                 <div class="dropdown-divider mt-0 mb-0" style="border-color:gray;" />
+
                 <main v-if="this.currentMode == this.screenMode.aview">
-                <div class="brand-card-body bg-info mb-0 pb-0">
-                    <div>
-                        <div class="text-light small font-weight-bold">답변자:</div>
-                        <div class="text-light font-weight-bold">{{this.auser.fullname}}</div>
+                    <div class="brand-card-body bg-info mb-0 pb-0">
+                        <div>
+                            <div class="text-light small font-weight-bold">답변자:</div>
+                            <div class="text-light font-weight-bold">{{this.auser.fullname}}</div>
+                        </div>
                     </div>
-                </div>
-                </main>    
+                </main>
+
                 <b-tooltip target="img_profile" :title="this.user.fullname"></b-tooltip>
-                <SidebarNav v-if="this.isSidebar" class="ml-0 pl-0" :navItems="this.categories.items"></SidebarNav>
+
+                <SidebarNav
+                    v-if="this.isSidebar"
+                    class="ml-0 pl-0"
+                    :navItems="this.categories.items"
+                ></SidebarNav>
+
                 <SidebarFooter />
+
                 <SidebarMinimizer />
             </AppSidebar>
+
             <main class="main">
-                <b-breadcrumb>
-                    <div>
-                        {{this.questionsTitle}}
-                    </div>
-                </b-breadcrumb>
+                <!-- <b-breadcrumb>
+    
+                        <div>
+    
+                            {{this.questionsTitle}}
+    
+                        </div>
+    
+                </b-breadcrumb>-->
+
                 <div class="container-fluid mt-2">
                     <router-view></router-view>
                 </div>
             </main>
+
             <AppAside fixed>
                 <!--aside-->
+
                 <DefaultAside />
             </AppAside>
         </div>
+
         <TheFooter>
             <div>
                 <a href="https://www.korea.com"></a>
+
                 <span class="ml-1">&copy; 2019 Quantified</span>
             </div>
         </TheFooter>
@@ -71,7 +98,7 @@
 <script>
 import nav from "@/_navqtemp";
 import { HeaderDropdown as AppHeaderDropdown } from "@coreui/vue";
-import { ServiceError } from '../service/service.error';
+import { ServiceError } from "../service/service.error";
 import {
     Header as AppHeader,
     SidebarToggler,
@@ -134,13 +161,14 @@ export default {
                 imageUrl: "empty",
                 fullname: "empty"
             },
-            questionsTitle: '',
+            questionsTitle: "",
             categories: [],
             cid: -1,
+            currentCategoryCode: '',
             rawCategoriesDatas: null,
             contentsService: this.$service.$contentsservice,
             loginService: this.$service.$loginservice,
-            currentMode: -1,
+            currentMode: -1
         };
     },
     created() {
@@ -151,75 +179,87 @@ export default {
         this.$service.$loginservice.userChangeSubject.subscribe(user => {
             this.setUserInfo(user);
         });
-        this.loadCategories();
+        //this.loadCategories();
     },
-    updated() {
-      
-    },
+    updated() {},
     mounted: function() {
         this.loadDatas();
     },
     watch: {
-        '$route.query'() {
+        "$route.query"() {
             this.loadDatas();
         }
     },
     methods: {
         showAlert(msg, path) {
-            this.$bvModal.msgBoxOk(msg)
-            .then(value => {
-                if(path) {
-                    this.$router.push(path);
-                }
-            })
-            .catch(err => {
-                this.$router.push('/page/500');
-            });
+            this.$bvModal
+                .msgBoxOk(msg)
+                .then(value => {
+                    if (path) {
+                        this.$router.push(path);
+                    }
+                })
+                .catch(err => {
+                    this.$router.push("/page/500");
+                });
         },
         async loadDatas() {
             const oldMode = this.currentMode;
-            if(this.$route.path.includes('cadminboard/tables')) {
-                console.log('mode table');
+            if (this.$route.path.includes("cadminboard/tables")) {
+                console.log("mode table");
                 this.currentMode = this.screenMode.atable;
-                this.isSidebar =  true;
-            } else if(this.$route.path.includes('cqboards/cquestions')) {
+                this.isSidebar = true;
+            } else if (this.$route.path.includes("cqboards/cquestions")) {
                 this.currentMode = this.screenMode.creator;
-                console.log('mode creator');
-                this.isSidebar =  true;
-            } else if(this.$route.path.includes('cadminboard/aview')) {
+                console.log("mode creator");
+                this.isSidebar = true;
+            } else if (this.$route.path.includes("cadminboard/aview")) {
                 this.currentMode = this.screenMode.aview;
-                this.isSidebar =  false;
-                console.log('mode aview');
-            } else if(this.$route.path.includes('cadminboard/cregister')) {
+                this.isSidebar = false;
+                console.log("mode aview");
+            } else if (this.$route.path.includes("cadminboard/cregister")) {
                 this.currentMode = this.screenMode.register;
-                this.isSidebar =  false;
-                console.log('mode register');
+                this.isSidebar = false;
+                console.log("mode register");
                 return;
-            } else if(this.$route.path.includes('cadminboard/ceditor')) {
+            } else if (this.$route.path.includes("cadminboard/ceditor")) {
                 this.currentMode = this.screenMode.cedit;
-                this.isSidebar =  false;
-                console.log('cart editor');
+                this.isSidebar = false;
+                console.log("cart editor");
                 return;
             }
-            await this.loadCategories();
-            
-            if(this.currentMode !== this.screenMode.aview) {
+            //await this.loadCategories();
+
+            if (this.currentMode !== this.screenMode.aview) {
                 this.isSidebar = true;
-                
+                this.contentsService.categoryChangeSubject;
+                if(this.$route.query && this.$route.query.ccode) {
+                    if(this.currentCategoryCode !== this.$route.query.ccode) {
+                        this.currentCategoryCode = this.$route.query.ccode;
+                        await this.loadCategories(this.currentCategoryCode);
+                    }
+                }
                 if (this.$route.query && this.$route.query.cid) {
-                        const cid = this.$route.query.cid;
-                        if ((this.cid !== cid) || isViewChanged == true) {
-                            this.cid = cid;
-                            this.contentsService.categoryChangeSubject.next(cid);
-                            this.questionsTitle = ElementCItemGenerator.
-                            genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
-                        } 
-                } else { 
-                        let cid = ElementCItemGenerator.getFirstValidCategoryFromItems(this.rawCategoriesDatas);
+                    const cid = this.$route.query.cid;
+                    
+                    if (this.cid !== cid || isViewChanged == true) {
                         this.cid = cid;
-                        this.questionsTitle = ElementCItemGenerator.
-                        genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, cid);
                         this.contentsService.categoryChangeSubject.next(cid);
+                        this.questionsTitle = ElementCItemGenerator.genMakeCategoryItemsDisplayName(
+                            this.rawCategoriesDatas,
+                            cid
+                        );
+                    }
+                } else {
+                    let cid = ElementCItemGenerator.getFirstValidCategoryFromItems(
+                        this.rawCategoriesDatas
+                    );
+                    this.cid = cid;
+                    this.questionsTitle = ElementCItemGenerator.genMakeCategoryItemsDisplayName(
+                        this.rawCategoriesDatas,
+                        cid
+                    );
+                    this.contentsService.categoryChangeSubject.next(cid);
                 }
             } else {
                 this.isSidebar = false;
@@ -227,29 +267,41 @@ export default {
             }
         },
         async loadUserAnswers() {
-            if(this.$route.query && this.$route.query.cid && this.$route.query.aid && this.$route.query.uid) {
-                const userInfo = await this.loginService.getUserProfileById(this.$route.query.uid);
+            if (
+                this.$route.query &&
+                this.$route.query.cid &&
+                this.$route.query.aid &&
+                this.$route.query.uid
+            ) {
+                const userInfo = await this.loginService.getUserProfileById(
+                    this.$route.query.uid
+                );
                 this.setAUserInfo(userInfo.data);
                 this.contentsService.userAnswerSelectedSubject.next({
                     cid: this.$route.query.cid,
-                    aid : this.$route.query.aid}
+                    aid: this.$route.query.aid
+                });
+                this.questionsTitle = ElementCItemGenerator.genMakeCategoryItemsDisplayName(
+                    this.rawCategoriesDatas,
+                    this.$route.query.cid
                 );
-                 this.questionsTitle = ElementCItemGenerator.
-                        genMakeCategoryItemsDisplayName(this.rawCategoriesDatas, this.$route.query.cid);
             }
         },
-        async loadCategories() {
-
-              let result = await this.contentsService.getCCategories();
-            if(result.code != ServiceError.success) {
-                console.log('faile get categories');
+        async loadCategories(code) {
+            let result = await this.contentsService.getCCategoriesByCode(code);
+            if (result.code != ServiceError.success) {
+                console.log("faile get categories");
             } else {
                 const cdata = JSON.parse(result.data.data);
                 this.rawCategoriesDatas = cdata;
                 if (this.currentMode == this.screenMode.atable) {
-                    this.categories = ElementCItemGenerator.genMakeSidebarCTablesItems(cdata);
-                } else if(this.currentMode == this.screenMode.creator) {
-                    this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(cdata);
+                    this.categories = ElementCItemGenerator.genMakeSidebarCTablesItems(
+                        cdata
+                    );
+                } else if (this.currentMode == this.screenMode.creator) {
+                    this.categories = ElementCItemGenerator.genMakeSidebarCategoryItems(
+                        cdata
+                    );
                 }
             }
         },
@@ -283,7 +335,7 @@ export default {
     computed: {
         name() {
             return this.$route.name;
-        },
+        }
     }
 };
 </script>

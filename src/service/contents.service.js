@@ -94,8 +94,25 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+    async deleteCategory(code) {
+        let url = `${this.config.host}/delccategory?code=${code}`;
+        try {
+            let result = await this.requestService.
+                requestDelete(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success, result.data)
+            } else {
+                if(result.code == 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
 
-    async deleteCategory(uid) {
+    async deleteCampaign(uid) {
         let url = `${this.config.host}/delcp?uid=${uid}`;
         try {
             let result = await this.requestService.
@@ -130,7 +147,23 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-
+    async getCCategoriesByUser() {
+        let url = `${this.config.host}/ccategoriesuser`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success, result.data)
+            } else {
+                if(result.code == 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async getCCategories() {
         let url = `${this.config.host}/ccategoriescode`;
         try {
@@ -148,7 +181,23 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-
+    async getCCategoriesByCode(code) {
+        let url = `${this.config.host}/ccatecode?code=${code}`;
+        try {
+            let result = await this.requestService.
+                requestGet(url);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success, result.data)
+            } else {
+                if(result.code == 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch (e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async getQuestions(id) {
         let url = `${this.config.host}/questions?id=${id}`;
         try {
@@ -298,6 +347,29 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
+    async updateCampaignTemplate(campaign) {
+        let url = `${this.config.host}/udatecpt`;
+        try {
+            console.log(JSON.stringify(campaign));
+            let result = await this.requestService.requestPost(url, JSON.stringify(campaign),
+            [{ kind: 'Content-Type', value: 'application/json' }]);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                } else if(result.code === 409) {
+                    return this.makeErrorObject(ServiceError.duplicate);
+                } else if(result.code === 406){
+                    return this.makeErrorObject(ServiceError.notaccept);
+                } else {
+                    return this.makeErrorObject(ServiceError.unknown);
+                }
+            }
+        } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async updateCampaignStatus(campaign) {
         let url = `${this.config.host}/udatecps`;
         try {
@@ -381,6 +453,40 @@ export class ContentsService {
         }
     }
 
+    async addNewCCategories(code, name) {
+        let url = `${this.config.host}/nccategories`;
+        try {
+            let result = await this.requestService.requestPost(url, JSON.stringify({code: code, name: name}),
+            [{ kind: 'Content-Type', value: 'application/json' }]);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
+    async updateCCategories(datas) {
+        let url = `${this.config.host}/uccategories`;
+        try {
+            let result = await this.requestService.requestPost(url, JSON.stringify(datas),
+            [{ kind: 'Content-Type', value: 'application/json' }]);
+            if (result.result) {
+                return this.makeErrorObject(ServiceError.success);
+            } else {
+                if(result.code === 401) {
+                    return this.makeErrorObject(ServiceError.autherror);
+                }
+                return this.makeErrorObject(ServiceError.fail);
+            }
+        } catch(e) {
+            return this.makeErrorObject(ServiceError.unknown);
+        }
+    }
     async addCCategories(datas) {
         let url = `${this.config.host}/wccategories`;
         try {

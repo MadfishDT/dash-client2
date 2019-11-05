@@ -178,7 +178,7 @@ export default new Router({
         },
         {
             path: '/cadminboard',
-            redirect: '/cadminboard/tables',
+            redirect: '/cadminboard/caeditor',
             name: 'CAdminTables',
             component: QCDefaultContainer,
             beforeEnter: requireAuth(),

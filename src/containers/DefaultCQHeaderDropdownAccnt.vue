@@ -8,6 +8,12 @@
              <b-dropdown-header tag="div" class="text-center">
                 <strong>설문지</strong>
             </b-dropdown-header>
+              <b-dropdown-item @click="gocampaign">
+                <i class="icon-book-open icons" /> 캠패인 설정
+            </b-dropdown-item>
+            <b-dropdown-item @click="gocategory">
+                <i class="icon-book-open icons" /> 카테고리편집
+            </b-dropdown-item>      
             <b-dropdown-item @click="goregister">
                 <i class="icon-book-open icons" /> 사용자 등록
             </b-dropdown-item>                      
@@ -17,9 +23,7 @@
             <b-dropdown-item @click="gocquestions">
                 <i class="icon-book-open icons" /> 설문지생성
             </b-dropdown-item>
-             <b-dropdown-item @click="gocategory">
-                <i class="icon-book-open icons" /> 카테고리편집
-            </b-dropdown-item>
+          
             <b-dropdown-header tag="div" class="text-center">
                 <strong>계정</strong>
             </b-dropdown-header>
@@ -63,6 +67,9 @@ export default {
             }
             this.adjustLoginFormUI();
         },
+        gocampaign: function() {
+            this.$router.push(`/cadminboard/caeditor`);
+        },
         goregister: function() {
             this.$router.push(`/cadminboard/cregister?d=${Date.now()}`);
         },
@@ -73,7 +80,7 @@ export default {
             this.$router.push('/qboards/questions');
         },
         goanswers: function() {
-            this.$router.push('/cadminboard');
+            this.$router.push('/cadminboard/tables');
         },
         gocategory: function() {
             this.$router.push('/cadminboard/ceditor');

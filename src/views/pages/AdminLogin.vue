@@ -170,7 +170,7 @@ export default {
         goToWork() {
             const user = this.loginService.getUser();
             if (user) {
-                this.$router.push("/cqboards");
+                this.$router.push("/cadminboard");
             }
         },
         login: async function() {
