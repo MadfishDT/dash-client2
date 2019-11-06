@@ -63,15 +63,11 @@
             </AppSidebar>
 
             <main class="main">
-                <!-- <b-breadcrumb>
-    
+                <b-breadcrumb v-if="isBreadcrumb">
                         <div>
-    
                             {{this.questionsTitle}}
-    
                         </div>
-    
-                </b-breadcrumb>-->
+                </b-breadcrumb>
 
                 <div class="container-fluid mt-2">
                     <router-view></router-view>
@@ -140,6 +136,7 @@ export default {
         return {
             emptyCid: -1,
             isSidebar: true,
+            isBreadcrumb: false,
             screenMode: {
                 creator: 0,
                 atable: 1,
@@ -166,6 +163,7 @@ export default {
             cid: -1,
             currentCategoryCode: '',
             rawCategoriesDatas: null,
+            currentCategoryName: '',
             contentsService: this.$service.$contentsservice,
             loginService: this.$service.$loginservice,
             currentMode: -1
@@ -205,12 +203,14 @@ export default {
         },
         async loadDatas() {
             const oldMode = this.currentMode;
+            this.isBreadcrumb = false;
             if (this.$route.path.includes("cadminboard/tables")) {
                 console.log("mode table");
                 this.currentMode = this.screenMode.atable;
                 this.isSidebar = true;
             } else if (this.$route.path.includes("cqboards/cquestions")) {
                 this.currentMode = this.screenMode.creator;
+                this.isBreadcrumb = true; 
                 console.log("mode creator");
                 this.isSidebar = true;
             } else if (this.$route.path.includes("cadminboard/aview")) {
@@ -245,7 +245,7 @@ export default {
                     if (this.cid !== cid) {
                         this.cid = cid;
                         this.contentsService.categoryChangeSubject.next(cid);
-                        this.questionsTitle = ElementCItemGenerator.genMakeCategoryItemsDisplayName(
+                        this.questionsTitle = this.currentCategoryName + ': '+ ElementCItemGenerator.genMakeCategoryItemsDisplayName(
                             this.rawCategoriesDatas,
                             cid
                         );
@@ -255,7 +255,7 @@ export default {
                         this.rawCategoriesDatas
                     );
                     this.cid = cid;
-                    this.questionsTitle = ElementCItemGenerator.genMakeCategoryItemsDisplayName(
+                    this.questionsTitle =  this.currentCategoryName + ': ' + ElementCItemGenerator.genMakeCategoryItemsDisplayName(
                         this.rawCategoriesDatas,
                         cid
                     );
@@ -281,7 +281,7 @@ export default {
                     cid: this.$route.query.cid,
                     aid: this.$route.query.aid
                 });
-                this.questionsTitle = ElementCItemGenerator.genMakeCategoryItemsDisplayName(
+                this.questionsTitle = this.currentCategoryName + ': ' +ElementCItemGenerator.genMakeCategoryItemsDisplayName(
                     this.rawCategoriesDatas,
                     this.$route.query.cid
                 );
@@ -294,6 +294,7 @@ export default {
             } else {
                 const cdata = JSON.parse(result.data.data);
                 this.rawCategoriesDatas = cdata;
+                this.currentCategoryName = result.data.name;
                 if (this.currentMode == this.screenMode.atable) {
                     this.categories = ElementCItemGenerator.genMakeSidebarCTablesItems(
                         cdata

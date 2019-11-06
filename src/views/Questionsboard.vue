@@ -1,5 +1,32 @@
 <template>
 <div >
+
+        <b-modal
+            centered
+            id="modal_campaign"
+            ref="modal_campaign"
+            title="캠페인 선택하기"
+            ok-title="확인"
+            cancel-title="취소"
+            @ok="handleSelectCampaignOk"
+        >
+            <b-row>
+                <b-col cols="12">
+                    <b-form-select
+                        value-field="ccode"
+                        text-field="name"
+                        v-model="selectCampaign"
+                        :options="selectCampaigns"
+                        :select-size="6"
+                    ></b-form-select>
+
+                    <div class="mt-3">
+                        선택(ID):
+                        <strong>{{ selectCampaign }}</strong>
+                    </div>
+                </b-col>
+            </b-row>
+        </b-modal>
     <div id="surveyContainer"></div>
 </div>
 </template>
@@ -54,6 +81,10 @@ export default {
                 }
         });
     },
+    async mounted() {
+        await this.loadCampaigns();
+        this.$refs.modal_campaign.show();
+    },
     beforeDestroy: function() {
         if(this.contentSubscription) {
             this.contentSubscription.unsubscribe();
@@ -65,11 +96,16 @@ export default {
             cid: -1,
             survey: null,
             modelSurvey: {},
-            contentsService: this.$service.$contentsservice
+            contentsService: this.$service.$contentsservice,
+            selectCampaign: '',
+            selectCampaigns: [],
         };
     },
     methods: {
         clickItems: function() {
+        },
+        handleSelectCampaignOk() {
+
         },
         showAlert(msg, path) {
             this.$bvModal.msgBoxOk(msg)
@@ -81,6 +117,12 @@ export default {
             .catch(err => {
                 this.$router.push('/page/500');
             });
+        },
+        async loadCampaigns() {
+            const result = await this.contentsService.getCampaignsbyCCode();
+            if(result.code === ServiceError.success) {
+                this.selectCampaigns = result.data;
+            }
         },
         async registerAnswer(answers) {
             const result = await this.contentsService.addAnswers(answers);

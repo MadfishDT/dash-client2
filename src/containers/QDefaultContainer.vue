@@ -136,7 +136,8 @@ export default {
     
     },
     mounted: async function() {
-        await this.loadCategories();
+        //await this.loadCategories();
+        this.loadCampaigns();
         this.loadDatas();
     },
     methods: {
@@ -162,6 +163,10 @@ export default {
         },
         clickItems: function() {
             console.log("click items1");
+        },
+        async loadCampaigns() {
+            const result = await this.contentsService.getCampaignsbyCCode();
+            console.log(result);
         },
         async loadCategories() {
 
