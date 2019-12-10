@@ -11,7 +11,7 @@
                                     <div>
                                         <b-row>
                                             <b-col cols="10">
-                                                <h1 class="mt-1" >QUANTIFIED ESG</h1>
+                                                <h1 class="mt-1" >Qustions?</h1>
                                             </b-col>
                                             <b-col>
                                                 <div  id="icon-backtowork">
