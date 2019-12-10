@@ -18,7 +18,7 @@ export class ConfigService {
         if(process.env.NODE_ENV === 'development') {
             return `http://localhost:9090`;
         } else {
-            return `http://qesg-dev.ddns.net:9090`;
+            return `http://35.193.127.219:9090`;
         }
     }
     

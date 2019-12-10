@@ -1,5 +1,31 @@
 <template>
     <div class="app bg-white">
+        <b-modal
+            centered
+            id="modal_campaign"
+            ref="modal_campaign"
+            title="캠페인 선택하기"
+            ok-title="확인"
+            cancel-title="취소"
+            @ok="handleSelectCampaignOk"
+        >
+            <b-row>
+                <b-col cols="12">
+                    <b-form-select
+                        value-field="ccode"
+                        text-field="name"
+                        v-model="selectCampaign"
+                        :options="selectCampaigns"
+                        :select-size="6"
+                    ></b-form-select>
+
+                    <div class="mt-3">
+                        선택(ID):
+                        <strong>{{ selectCampaign }}</strong>
+                    </div>
+                </b-col>
+            </b-row>
+        </b-modal>
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile />
             <div class="navbar-brand" to="#">
@@ -113,6 +139,8 @@ export default {
                 imageUrl: "empty",
                 fullname: "empty"
             },
+            selectCampaign: '',
+            selectCampaigns: [],
             questionsTitle: '',
             categories: [],
             cid: -1,
@@ -136,11 +164,18 @@ export default {
     
     },
     mounted: async function() {
-        //await this.loadCategories();
-        this.loadCampaigns();
-        this.loadDatas();
+        //
+        await this.loadCampaigns();
+        this.$refs.modal_campaign.show();
+        
     },
     methods: {
+        async handleSelectCampaignOk() {
+            if(this.selectCampaign) {
+                await this.loadCategories(this.selectCampaign);
+                this.loadDatas();
+            }
+        },
         loadDatas() {
             if (this.$route.query && this.$route.query.cid) {
                 let cid = this.$route.query.cid;
@@ -164,13 +199,15 @@ export default {
         clickItems: function() {
             console.log("click items1");
         },
-        async loadCampaigns() {
+         async loadCampaigns() {
             const result = await this.contentsService.getCampaignsbyCCode();
-            console.log(result);
+            if(result.code === ServiceError.success) {
+                this.selectCampaigns = result.data;
+            }
         },
-        async loadCategories() {
+        async loadCategories(code) {
 
-            let result = await this.contentsService.getCCategories();
+            let result = await this.contentsService.getCCategoriesByCode(code);
             if(result.code != ServiceError.success) {
                 console.log('faile get categories');
             } else {

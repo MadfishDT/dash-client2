@@ -1,15 +1,42 @@
 <template>
     <div class="app bg-white">
+         <b-modal
+            centered
+            id="modal_answers_campaign"
+            ref="modal_answers_campaign"
+            title="캠페인 선택하기"
+            ok-title="확인"
+            cancel-title="취소"
+            @ok="handleSelectCampaignOk"
+        >
+            <b-row>
+                <b-col cols="12">
+                    <b-form-select
+                        value-field="ccode"
+                        text-field="name"
+                        v-model="selectCampaign"
+                        :options="selectCampaigns"
+                        :select-size="6"
+                    ></b-form-select>
+
+                    <div class="mt-3">
+                        선택(ID):
+                        <strong>{{ selectCampaign }}</strong>
+                    </div>
+                </b-col>
+            </b-row>
+        </b-modal>
         <AppHeader fixed>
             <SidebarToggler class="d-lg-none" display="md" mobile />
-
             <div class="navbar-brand" to="#">
                 <h2>Quantified</h2>
             </div>
 
             <SidebarToggler class="d-md-down-none" display="lg" :defaultOpen="true" />
 
+           
             <b-navbar-nav class="ml-auto">
+                 <i class="button icon-reload icons font-2xl d-block"></i>
                 <DefaultCQHeaderDropdownAccnt />
             </b-navbar-nav>
         </AppHeader>
@@ -84,7 +111,6 @@
         <TheFooter>
             <div>
                 <a href="https://www.korea.com"></a>
-
                 <span class="ml-1">&copy; 2019 Quantified</span>
             </div>
         </TheFooter>
@@ -158,6 +184,8 @@ export default {
                 imageUrl: "empty",
                 fullname: "empty"
             },
+            selectCampaign: "",
+            selectCampaigns: [],
             questionsTitle: "",
             categories: [],
             cid: -1,
@@ -207,6 +235,10 @@ export default {
             if (this.$route.path.includes("cadminboard/tables")) {
                 console.log("mode table");
                 this.currentMode = this.screenMode.atable;
+                await this.loadCampaigns();
+                if(!this.$route.query || !this.$route.query.cid) {
+                     this.$refs.modal_answers_campaign.show();
+                }
                 this.isSidebar = true;
             } else if (this.$route.path.includes("cqboards/cquestions")) {
                 this.currentMode = this.screenMode.creator;
@@ -305,6 +337,15 @@ export default {
                     );
                 }
             }
+        },
+         async loadCampaigns() {
+            const result = await this.contentsService.getCampaigns();
+            if (result.code === ServiceError.success) {
+                this.selectCampaigns = result.data;
+            }
+        },
+        handleSelectCampaignOk() {
+            this.loadCategories(this.selectCampaign);
         },
         setAUserInfo(user) {
             this.auser.fullname = user.user_name;

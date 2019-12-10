@@ -25,7 +25,7 @@
             ref="modal_modify_name"
             title="수정할 캠페인 이름을 넣으세요"
             ok-title="확인"
-            cancel-title="취소" 
+            cancel-title="취소"
             @ok="handleModifyCampaignNameOk"
         >
             <form ref="form" @submit.stop.prevent="handleSubmit">
