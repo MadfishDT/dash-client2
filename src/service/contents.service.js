@@ -318,7 +318,7 @@ export class ContentsService {
             return this.makeErrorObject(ServiceError.unknown);
         }
     }
-    async deleteCampaign(campaign) {
+    /*async deleteCampaign(campaign) {
         let url = `${this.config.host}/pushcp`;
         try {
             let result = await this.requestService.requestPost(url, JSON.stringify(campaign),
@@ -340,7 +340,7 @@ export class ContentsService {
         } catch(e) {
             return this.makeErrorObject(ServiceError.unknown);
         }
-    }
+    }*/
     async addNewCampaign(campaign) {
         let url = `${this.config.host}/pushcp`;
         try {

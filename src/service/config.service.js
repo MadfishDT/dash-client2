@@ -16,9 +16,9 @@ export class ConfigService {
 
     get host() {    
         if(process.env.NODE_ENV === 'development') {
-            return `http://35.193.127.219:9090`;
+            return `${window.location.origin}`.replace(':8080','') + ':9090';
         } else {
-            return `http://35.193.127.219:9090`;
+            return `${window.location.origin}`.replace(':8080','') + ':9090';
         }
     }
     
